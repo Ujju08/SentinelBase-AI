@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DefenceSite AI | Infrastructure Assessment</title>
+  <style>
+    :root {
+      --bg: #101713;
+      --panel: #18221b;
+      --panel2: #202d23;
+      --olive: #a7b77b;
+      --olive2: #d3dfad;
+      --text: #edf2e8;
+      --muted: #aab6a6;
+      --border: #344438;
+      --amber: #e6b45b;
+      --red: #e47770;
+      --green: #8fd1a0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55
+    }
+
+    header {
+      padding: 18px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+      background: #0c120e;
+      position: sticky;
+      top: 0;
+      z-index: 5
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .logo {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      background: var(--olive);
+      color: #172018;
+      border-radius: 10px;
+      font-size: 22px;
+      font-weight: 900
+    }
+
+    .brand h1 {
+      font-size: 20px;
+      letter-spacing: .5px
+    }
+
+    .brand h1 span {
+      color: var(--olive2)
+    }
+
+    .brand p {
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .badge {
+      font-size: 11px;
+      letter-spacing: 1px;
+      padding: 7px 11px;
+      border: 1px solid #53644a;
+      border-radius: 20px;
+      color: var(--olive2);
+      white-space: nowrap
+    }
+
+    .hero {
+      padding: 42px 5% 35px;
+      background: radial-gradient(ellipse at 85% 10%, #34452b 0, transparent 40%), linear-gradient(110deg, #1b2a20, #101713)
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--olive2);
+      font-weight: 700;
+      margin-bottom: 10px
+    }
+
+    .hero h2 {
+      font-size: clamp(28px, 4vw, 43px);
+      line-height: 1.12;
+      max-width: 800px;
+      margin-bottom: 15px
+    }
+
+    .hero p {
+      max-width: 780px;
+      color: #c5d0c2;
+      font-size: 15px
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 23px
+    }
+
+    button,
+    .button {
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 17px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 13px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px
+    }
+
+    .primary {
+      background: var(--olive);
+      color: #172018
+    }
+
+    .primary:hover {
+      background: var(--olive2)
+    }
+
+    .secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid #586750
+    }
+
+    .secondary:hover {
+      background: #263328
+    }
+
+    main {
+      max-width: 1440px;
+      margin: auto;
+      padding: 28px 5% 40px
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 25px
+    }
+
+    .metric,
+    .card,
+    .feature {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 13px
+    }
+
+    .metric {
+      padding: 18px
+    }
+
+    .metric .label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .7px
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 24px;
+      margin: 7px 0 3px;
+      color: var(--olive2)
+    }
+
+    .metric small {
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .section-title {
+      margin: 26px 0 15px
+    }
+
+    .section-title h3 {
+      font-size: 21px
+    }
+
+    .section-title p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+      gap: 18px;
+      align-items: start
+    }
+
+    .card {
+      padding: 22px;
+      margin-bottom: 18px
+    }
+
+    .card h3 {
+      font-size: 17px;
+      margin-bottom: 5px
+    }
+
+    .desc {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 20px
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px
+    }
+
+    .field.full {
+      grid-column: 1/-1
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #dbe5d7
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 11px 12px;
+      background: #101813;
+      color: var(--text);
+      border: 1px solid #435445;
+      border-radius: 7px;
+      font: inherit;
+      font-size: 13px
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: 2px solid #a7b77b66;
+      border-color: var(--olive)
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .checkline {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px;
+      background: #242b20;
+      border: 1px solid #4a4b32;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #d4d9c5
+    }
+
+    .checkline input {
+      width: auto;
+      margin-top: 4px
+    }
+
+    .submit {
+      width: 100%;
+      margin-top: 18px;
+      padding: 14px
+    }
+
+    .result-empty {
+      text-align: center;
+      padding: 35px 15px;
+      border: 1px dashed #52624f;
+      border-radius: 10px;
+      color: var(--muted)
+    }
+
+    .result-empty .icon {
+      font-size: 35px;
+      margin-bottom: 10px
+    }
+
+    .results {
+      display: none
+    }
+
+    .scorebox {
+      background: #111a14;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 19px;
+      text-align: center
+    }
+
+    .score {
+      font-size: 51px;
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--olive2)
+    }
+
+    .score small {
+      font-size: 19px;
+      color: var(--muted)
+    }
+
+    .scorelabel {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 7px
+    }
+
+    .track {
+      height: 9px;
+      background: #354237;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 16px 0 12px
+    }
+
+    .bar {
+      height: 100%;
+      width: 0;
+      background: var(--olive);
+      transition: width .35s
+    }
+
+    .status {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 20px;
+      background: #243c2a;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800
+    }
+
+    .status.warn {
+      background: #453820;
+      color: #f0c879
+    }
+
+    .status.bad {
+      background: #482a28;
+      color: #ff9e96
+    }
+
+    .summary {
+      font-size: 13px;
+      color: #d1dbce;
+      margin-top: 13px;
+      text-align: left
+    }
+
+    .subsection {
+      margin-top: 22px
+    }
+
+    .subsection h4 {
+      font-size: 14px;
+      margin-bottom: 9px
+    }
+
+    .riskrow {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px
+    }
+
+    .riskrow:last-child {
+      border-bottom: 0
+    }
+
+    .riskrow p {
+      color: var(--muted);
+      margin-top: 3px;
+      max-width: 420px
+    }
+
+    .tag {
+      font-size: 10px;
+      font-weight: 800;
+      border-radius: 5px;
+      padding: 5px 7px;
+      white-space: nowrap
+    }
+
+    .tag.low {
+      background: #243c2a;
+      color: #9ce0ac
+    }
+
+    .tag.medium {
+      background: #453820;
+      color: #f0c879
+    }
+
+    .tag.high {
+      background: #482a28;
+      color: #ff9e96
+    }
+
+    .tag.unknown {
+      background: #303b42;
+      color: #c4d5e2
+    }
+
+    .result-list {
+      list-style: none
+    }
+
+    .result-list li {
+      font-size: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      color: #d8e0d5
+    }
+
+    .result-list li:before {
+      content: "→ ";
+      color: var(--olive2);
+      font-weight: 900
+    }
+
+    .result-list li:last-child {
+      border: 0
+    }
+
+    .category-bars {
+      display: grid;
+      gap: 12px
+    }
+
+    .category-row {
+      display: grid;
+      grid-template-columns: 130px 1fr 35px;
+      align-items: center;
+      gap: 9px;
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .mini-track {
+      height: 7px;
+      background: #354237;
+      border-radius: 10px;
+      overflow: hidden
+    }
+
+    .mini-bar {
+      height: 100%;
+      background: var(--olive)
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 14px
+    }
+
+    .feature {
+      padding: 19px
+    }
+
+    .feature .icon {
+      font-size: 25px;
+      margin-bottom: 9px
+    }
+
+    .feature h4 {
+      font-size: 14px;
+      margin-bottom: 7px
+    }
+
+    .feature p {
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .notice {
+      margin-top: 17px;
+      border-left: 3px solid var(--amber);
+      background: #29261c;
+      padding: 13px 15px;
+      font-size: 11px;
+      color: #d8cba8;
+      border-radius: 0 7px 7px 0
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 22px 5%;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.7
+    }
+
+    footer strong {
+      color: var(--olive2)
+    }
+
+
+    .blueprint-panel{margin-top:18px;padding:18px;border:1px solid #53644a;border-radius:10px;background:#131d15}
+    .blueprint-panel h4{font-size:15px;margin-bottom:7px;color:var(--olive2)}
+    .blueprint-panel p{font-size:12px;color:var(--muted);margin-bottom:12px}
+    .blueprint-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .blueprint-preview{display:none;margin-top:14px;padding:10px;background:#0c120e;border:1px dashed #53644a;border-radius:8px;text-align:center}
+    .blueprint-preview img{max-width:100%;max-height:420px;object-fit:contain}
+    .blueprint-preview canvas{max-width:100%;height:auto}
+    .blueprint-output{display:none;margin-top:15px;padding:16px;background:#101813;border:1px solid var(--border);border-radius:10px}
+    .blueprint-output h4{margin:12px 0 5px}
+    .blueprint-output ul{padding-left:20px;color:#d8e0d5;font-size:12px}
+    .blueprint-output li{margin:7px 0}
+    .bp-status{font-size:12px;color:var(--olive2);margin-top:10px;white-space:pre-wrap}
+    .bp-warning{border-left:3px solid var(--amber);padding:10px 12px;background:#29261c;color:#d8cba8;font-size:11px;margin-top:12px}
+
+    @media(max-width:950px) {
+      .layout {
+        grid-template-columns: 1fr
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, 1fr)
+      }
+    }
+
+    @media(max-width:600px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr
+      }
+
+      .field.full {
+        grid-column: auto
+      }
+
+      .features {
+        grid-template-columns: 1fr
+      }
+
+      .category-row {
+        grid-template-columns: 100px 1fr 30px
+      }
+
+      .card {
+        padding: 16px
+      }
+
+      .hero {
+        padding-top: 32px
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+        color: #111
+      }
+
+      header,
+      .hero-actions,
+      .form-card,
+      .no-print,
+      footer {
+        display: none !important
+      }
+
+      main {
+        padding: 0;
+        max-width: none
+      }
+
+      .card,
+      .metric {
+        background: white;
+        color: #111;
+        border: 1px solid #ccc;
+        break-inside: avoid
+      }
+
+      .layout {
+        display: block
+      }
+
+      .results {
+        display: block !important
+      }
+
+      .scorebox {
+        background: #f5f5f5
+      }
+
+      .summary,
+      .result-list li,
+      .riskrow p,
+      .section-title p,
+      .metric small,
+      .desc {
+        color: #333
+      }
+
+      .score {
+        color: #263a20
+      }
+
+      .tag {
+        border: 1px solid #aaa
+      }
+
+      .metrics {
+        grid-template-columns: repeat(4, 1fr)
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">DS</div>
+      <div>
+        <h1>DefenceSite <span>AI</span></h1>
+        <p>Infrastructure planning · resilience · environmental screening</p>
+      </div>
+    </div>
+
+    <!-- Unified Navigation Tabs -->
+    <nav class="nav-tabs" style="display:flex;gap:6px;background:#131c16;padding:4px;border-radius:10px;border:1px solid #344438">
+      <a href="defence_site_planner_multipage.html" class="nav-tab active" style="text-decoration:none;font-size:12px;font-weight:700;padding:7px 14px;border-radius:7px;display:flex;align-items:center;gap:6px;background:#243c2a;color:#9ee6b0;border:1px solid #3d7558">
+        <span>🏠</span> Site Planner
+      </a>
+      <a href="blueprint_3d_spatial.html" class="nav-tab" style="text-decoration:none;font-size:12px;font-weight:600;padding:7px 14px;border-radius:7px;display:flex;align-items:center;gap:6px;background:transparent;color:#77d9ff;border:1px solid transparent">
+        <span>🌐</span> 3D Spatial Twin
+      </a>
+    </nav>
+
+    <div class="badge">DEMO PROTOTYPE · NOT AN OFFICIAL SYSTEM</div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">DEFENCE SUPPORT INFRASTRUCTURE</div>
+    <h2>Plan resilient infrastructure.<br>Assess risks before development.</h2>
+    <p>Evaluate proposed support facilities using terrain, essential utilities, environmental conditions and
+      emergency-readiness indicators. The tool produces a transparent preliminary assessment based on the information
+      entered.</p>
+    <div class="hero-actions">
+      <button class="primary" onclick="document.getElementById('assessment').scrollIntoView({behavior:'smooth'})">Start
+        site assessment ↓</button>
+      <button class="secondary" onclick="loadExample()">Load example scenario</button>
+    </div>
+  </section>
+
+  <main>
+    <section class="metrics">
+      <div class="metric">
+        <div class="label">Assessment engine</div><strong>Ready</strong><small>Transparent rule-based scoring</small>
+      </div>
+      <div class="metric">
+        <div class="label">Assessment areas</div><strong>5</strong><small>Terrain, environment, utilities, access,
+          resilience</small>
+      </div>
+      <div class="metric">
+        <div class="label">Report generation</div><strong>Instant</strong><small>Printable summary and
+          recommendations</small>
+      </div>
+      <div class="metric">
+        <div class="label">Data connection</div><strong>Manual</strong><small>No live GIS or official database
+          connected</small>
+      </div>
+      <div class="metric">
+        <div class="label">Regulations</div><a href="Regulations.html"><strong>Government
+            Regulations</strong></a><small>Rule to set up a Weapon Industry</small>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <h3>Infrastructure assessment workspace</h3>
+      <p>Enter general, non-sensitive site information. Do not enter classified locations, operational details, or
+        sensitive military information.</p>
+    </div>
+
+    <div class="layout">
+      <section id="assessment" class="card form-card">
+        <h3>Site configuration</h3>
+        <p class="desc">Complete the fields below to generate a preliminary infrastructure-readiness report.</p>
+        <form id="siteForm">
+          <div class="form-grid">
+            <div class="field full"><label for="project">Project / facility name</label><input id="project" required
+                placeholder="e.g. Regional Equipment Maintenance Facility"></div>
+            <div class="field"><label for="facility">Facility category</label>
+              <select id="facility" required>
+                <option value="">Select category</option>
+                <option value="manufacturing">Defence equipment manufacturing</option>
+                <option value="maintenance">Vehicle / equipment maintenance workshop</option>
+                <option value="electronics">Electronics and communications equipment facility</option>
+                <option value="medical">Medical and emergency support facility</option>
+                <option value="logistics">Logistics and supply warehouse</option>
+                <option value="training">General training-support infrastructure</option>
+                <option value="disaster">Disaster-response support centre</option>
+              </select>
+            </div>
+            <div class="field"><label for="location">General location (optional)</label><input id="location"
+                placeholder="e.g. District / state only"></div>
+            <div class="field"><label for="area">Proposed land area (acres)</label><input id="area" type="number"
+                min="0.1" step="0.1" required placeholder="e.g. 12"></div>
+            <div class="field"><label for="slope">Terrain slope</label><select id="slope" required>
+                <option value="">Select condition</option>
+                <option value="flat">Flat (0–3%)</option>
+                <option value="gentle">Gentle (above 3–8%)</option>
+                <option value="steep">Steep (above 8%)</option>
+                <option value="unknown">Not surveyed</option>
+              </select></div>
+            <div class="field"><label for="soil">Soil / ground stability</label><select id="soil" required>
+                <option value="">Select condition</option>
+                <option value="stable">Stable based on preliminary survey</option>
+                <option value="moderate">Requires investigation</option>
+                <option value="weak">Weak / unstable suspected</option>
+                <option value="unknown">Data unavailable</option>
+              </select></div>
+            <div class="field"><label for="flood">Flood exposure</label><select id="flood" required>
+                <option value="">Select condition</option>
+                <option value="low">Low based on available data</option>
+                <option value="medium">Moderate / uncertain</option>
+                <option value="high">High exposure</option>
+                <option value="unknown">Not assessed</option>
+              </select></div>
+            <div class="field"><label for="seismic">Seismic hazard information</label><select id="seismic" required>
+                <option value="">Select status</option>
+                <option value="reviewed">Reviewed using authoritative regional data</option>
+                <option value="review">Engineering review required</option>
+                <option value="unknown">Not verified</option>
+              </select></div>
+            <div class="field"><label for="water">Water availability</label><select id="water" required>
+                <option value="">Select condition</option>
+                <option value="adequate">Adequate supply confirmed</option>
+                <option value="limited">Limited supply</option>
+                <option value="scarce">Scarce / unconfirmed</option>
+                <option value="unknown">Not assessed</option>
+              </select></div>
+            <div class="field"><label for="power">Electricity and backup power</label><select id="power" required>
+                <option value="">Select condition</option>
+                <option value="reliable">Reliable supply and backup assessed</option>
+                <option value="partial">Partial / needs improvement</option>
+                <option value="limited">Limited or unverified</option>
+              </select></div>
+            <div class="field"><label for="roads">General road access</label><select id="roads" required>
+                <option value="">Select condition</option>
+                <option value="good">Suitable access appears available</option>
+                <option value="moderate">Access improvements may be needed</option>
+                <option value="poor">Access is limited</option>
+                <option value="unknown">Not assessed</option>
+              </select></div>
+            <div class="field"><label for="residential">Nearby residential areas</label><select id="residential"
+                required>
+                <option value="">Select distance</option>
+                <option value="near">Nearby / requires review</option>
+                <option value="medium">Some distance; impacts still need review</option>
+                <option value="far">No nearby area identified in preliminary review</option>
+                <option value="unknown">Not verified</option>
+              </select></div>
+            <div class="field"><label for="protected">Protected / sensitive environment</label><select id="protected"
+                required>
+                <option value="">Select status</option>
+                <option value="clear">No known overlap; verified</option>
+                <option value="near">Nearby or potential impact</option>
+                <option value="overlap">Potential overlap / restriction</option>
+                <option value="unknown">Not verified</option>
+              </select></div>
+            <div class="field"><label for="emissions">Expected environmental impact</label><select id="emissions"
+                required>
+                <option value="">Select level</option>
+                <option value="low">Low</option>
+                <option value="medium">Moderate</option>
+                <option value="high">High / needs detailed review</option>
+                <option value="unknown">Not estimated</option>
+              </select></div>
+            <div class="field"><label for="waste">Waste management plan</label><select id="waste" required>
+                <option value="">Select status</option>
+                <option value="complete">Plan identified</option>
+                <option value="partial">Plan needs improvement</option>
+                <option value="none">No plan identified</option>
+              </select></div>
+            <div class="field"><label for="fire">Fire and emergency readiness</label><select id="fire" required>
+                <option value="">Select status</option>
+                <option value="ready">Plan and systems assessed</option>
+                <option value="partial">Partially assessed</option>
+                <option value="missing">Not assessed / missing</option>
+              </select></div>
+            <div class="field"><label for="continuity">Continuity planning</label><select id="continuity" required>
+                <option value="">Select status</option>
+                <option value="ready">Essential services continuity reviewed</option>
+                <option value="partial">Some gaps identified</option>
+                <option value="missing">Not yet planned</option>
+              </select></div>
+              <div class="field full">
+                <div class="blueprint-panel">
+                  <h4>Blueprint review (PDF or image)</h4>
+                  <p>Upload a non-sensitive factory floor plan, then run a preliminary text-and-checklist scan for general building safety, accessibility, utilities and environmental planning. Do not upload classified or sensitive military drawings.</p>
+                  <label for="blueprintFile">Choose blueprint file</label>
+                  <input id="blueprintFile" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.txt">
+                  <label for="blueprintNotes">Optional notes about rooms, labels or proposed processes</label>
+                  <textarea id="blueprintNotes" rows="3" placeholder="e.g. office, assembly area, electrical room, loading bay, waste holding area..."></textarea>
+                  <div class="blueprint-actions">
+                    <button class="secondary" type="button" id="previewBlueprint">Preview file</button>
+                    <button class="primary" type="button" id="launch3DViewer" style="background:linear-gradient(135deg,#0284c7,#1d4ed8);border-color:#38bdf8;color:#fff;padding:11px 18px">🌐 Upload & Launch 3D Spatial Analysis →</button>
+                  </div>
+                  <div id="blueprintStatus" class="bp-status" aria-live="polite">No blueprint selected.</div>
+                  <div id="blueprintPreview" class="blueprint-preview"></div>
+                  <div id="blueprintOutput" class="blueprint-output" aria-live="polite"></div>
+                </div>
+              </div>
+            <div class="field full">
+              <div class="checkline"><input type="checkbox" id="ack" required><label for="ack" style="font-weight:400">I
+                  understand this is a demonstration screening tool, not an official approval or substitute for
+                  professional engineering, environmental, legal or safety review.</label></div>
+            </div>
+          </div>
+          <button class="primary submit" type="submit">Assess infrastructure readiness →</button>
+        </form>
+      </section>
+
+      <aside>
+        <section class="card">
+          <h3>Assessment report</h3>
+          <p class="desc">Your preliminary results will appear here after you submit the form.</p>
+          <div id="empty" class="result-empty">
+            <div class="icon">⌁</div><strong>Awaiting site information</strong>
+            <p style="font-size:12px;margin-top:8px">Complete the form to see category scores, risk flags and
+              recommended next steps.</p>
+          </div>
+          <div id="results" class="results">
+            <div class="scorebox">
+              <div class="score"><span id="score">0</span><small>/100</small></div>
+              <div class="scorelabel">Infrastructure readiness indicator</div>
+              <div class="track">
+                <div id="scorebar" class="bar"></div>
+              </div>
+              <span id="status" class="status">Assessment complete</span>
+              <p id="summary" class="summary"></p>
+            </div>
+            <div class="subsection">
+              <h4>Category breakdown</h4>
+              <div id="categoryScores" class="category-bars"></div>
+            </div>
+            <div class="subsection">
+              <h4>Risk and data flags</h4>
+              <div id="risks"></div>
+            </div>
+            <div class="subsection">
+              <h4>Recommended next steps</h4>
+              <ul id="recommendations" class="result-list"></ul>
+            </div>
+            <div class="subsection">
+              <h4>Facility-specific considerations</h4>
+              <ul id="facilityNotes" class="result-list"></ul>
+            </div>
+            <div class="hero-actions no-print">
+              <button class="primary" onclick="window.print()">Print / Save report</button>
+              <button class="secondary" onclick="resetAssessment()">New assessment</button>
+            </div>
+          </div>
+          <div class="notice"><strong>Important:</strong> Scores are illustrative and based only on the values entered.
+            No official defence, environmental, mapping or engineering databases are connected. Final decisions require
+            authoritative data and qualified professionals.</div>
+        </section>
+      </aside>
+    </div>
+
+    <div class="section-title">
+      <h3>Platform capabilities</h3>
+      <p>Designed for general support infrastructure planning, safety and sustainability.</p>
+    </div>
+    <section class="features">
+      <div class="feature">
+        <div class="icon">⌁</div>
+        <h4>Terrain & engineering screening</h4>
+        <p>Flags slope, ground stability, flood and seismic information that may require further investigation.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">♻</div>
+        <h4>Environmental responsibility</h4>
+        <p>Highlights water, waste, emissions, community and protected-area considerations.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">＋</div>
+        <h4>Infrastructure resilience</h4>
+        <p>Prompts review of essential services, fire safety, emergency preparedness and continuity arrangements.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <strong>DefenceSite AI</strong> — Demonstration prototype for defence-support infrastructure planning.<br>
+    This page uses local browser calculations only. It does not connect to official databases, live maps, sensors or
+    trained AI models. Do not enter classified, sensitive or operational military information. All scores and
+    recommendations are preliminary and must be validated by relevant authorities and qualified specialists.
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script>
+    const $ = id => document.getElementById(id);
+    const labels = {
+      terrain: "Terrain & ground", environment: "Environment", utilities: "Essential utilities",
+      access: "General access", resilience: "Resilience & safety"
+    };
+    const facilityNotes = {
+      manufacturing: [
+        "Review process safety, industrial ventilation, material handling and applicable manufacturing permissions.",
+        "Identify appropriate emissions controls, wastewater treatment and authorized waste-disposal routes."
+      ],
+      maintenance: [
+        "Assess safe handling and storage of oils, batteries, solvents and other workshop materials.",
+        "Plan for spill containment, workshop ventilation, fire safety and authorized hazardous-waste disposal."
+      ],
+      electronics: [
+        "Assess electrical safety, ventilation, electronic waste streams and any process chemicals.",
+        "Plan secure and compliant storage and disposal of equipment and materials."
+      ],
+      medical: [
+        "Assess hygiene, medical waste segregation, cold-chain needs where relevant and reliable essential utilities.",
+        "Review accessibility, emergency power and applicable healthcare-facility requirements."
+      ],
+      logistics: [
+        "Assess safe storage, fire protection, loading areas, traffic circulation and inventory handling.",
+        "Review weather protection, drainage and continuity arrangements for essential supplies."
+      ],
+      training: [
+        "Review occupancy safety, accessibility, sanitation, fire precautions and emergency procedures.",
+        "Ensure proposed use is compatible with local land-use rules and community/environmental constraints."
+      ],
+      disaster: [
+        "Assess all-hazard preparedness, emergency supplies, sanitation, backup power and communication continuity.",
+        "Plan routine inspections, accessible emergency routes and coordination with relevant civil authorities."
+      ]
+    };
+    function risk(list, name, level, detail) {
+      list.push({ name, level, detail });
+    }
+    function assess(d) {
+      const risks = [], rec = [], scores = {};
+      // Each category score is a transparent illustrative screening value, not an official rating.
+      let terrain = 100, environment = 100, utilities = 100, access = 100, resilience = 100;
+      const deduct = (category, points) => { if (category === "terrain") terrain -= points; if (category === "environment") environment -= points; if (category === "utilities") utilities -= points; if (category === "access") access -= points; if (category === "resilience") resilience -= points; };
+      if (d.slope === "gentle") { deduct("terrain", 8); risk(risks, "Terrain slope", "Medium", "Grading, erosion control and drainage need engineering review."); rec.push("Commission a topographic survey and review grading, drainage and erosion control."); }
+      if (d.slope === "steep") { deduct("terrain", 22); risk(risks, "Terrain slope", "High", "Steep ground may increase construction and stability challenges."); rec.push("Obtain a detailed topographic and geotechnical assessment before design decisions."); }
+      if (d.slope === "unknown") { deduct("terrain", 15); risk(risks, "Terrain survey", "Unknown", "Slope information is missing."); rec.push("Obtain a topographic survey; do not interpret missing data as safe conditions."); }
+      if (d.soil === "moderate") { deduct("terrain", 12); risk(risks, "Ground stability", "Medium", "Ground bearing conditions require further investigation."); rec.push("Conduct geotechnical testing and have qualified engineers review foundation requirements."); }
+      if (d.soil === "weak") { deduct("terrain", 25); risk(risks, "Ground stability", "High", "Weak or unstable ground is suspected."); rec.push("Pause layout decisions until a qualified geotechnical assessment is completed."); }
+      if (d.soil === "unknown") { deduct("terrain", 15); risk(risks, "Ground data", "Unknown", "Ground stability has not been established."); rec.push("Arrange a geotechnical investigation and document the limits of available evidence."); }
+      if (d.flood === "medium") { deduct("terrain", 10); risk(risks, "Flood exposure", "Medium", "Flood and drainage conditions need review."); rec.push("Review authoritative flood maps, historical events and site drainage requirements."); }
+      if (d.flood === "high") { deduct("terrain", 25); risk(risks, "Flood exposure", "High", "High flood exposure could create serious infrastructure risks."); rec.push("Obtain a flood-risk and drainage assessment before considering development."); }
+      if (d.flood === "unknown") { deduct("terrain", 15); risk(risks, "Flood information", "Unknown", "Flood exposure has not been assessed."); rec.push("Verify flood exposure using authoritative regional data and a qualified assessment."); }
+      if (d.seismic === "review") { deduct("terrain", 8); risk(risks, "Seismic design", "Medium", "Engineering review of regional seismic hazard is required."); rec.push("Have a qualified engineer assess the applicable seismic design requirements."); }
+      if (d.seismic === "unknown") { deduct("terrain", 10); risk(risks, "Seismic data", "Unknown", "Regional seismic information has not been verified."); rec.push("Verify authoritative regional seismic hazard information before design."); }
+      if (d.water === "limited") { deduct("utilities", 10); risk(risks, "Water supply", "Medium", "Supply may not meet facility needs."); rec.push("Prepare a water-demand balance and investigate lawful, sustainable supply and reuse options."); }
+      if (d.water === "scarce") { deduct("utilities", 20); risk(risks, "Water supply", "High", "Water supply is scarce or unconfirmed."); rec.push("Verify adequate and lawful water availability before selecting the site."); }
+      if (d.water === "unknown") { deduct("utilities", 12); risk(risks, "Water data", "Unknown", "Water availability has not been verified."); rec.push("Confirm water quantity, quality, permissions and continuity arrangements."); }
+      if (d.power === "partial") { deduct("utilities", 10); risk(risks, "Power continuity", "Medium", "Backup capacity or reliability needs improvement."); rec.push("Assess essential-load requirements, backup power and routine maintenance arrangements."); }
+      if (d.power === "limited") { deduct("utilities", 18); risk(risks, "Power availability", "High", "Electricity or backup arrangements are limited or unverified."); rec.push("Verify the utility supply and prepare a suitable backup-power assessment."); }
+      if (d.roads === "moderate") { deduct("access", 8); risk(risks, "Road access", "Medium", "Access improvements may be needed."); rec.push("Review general road condition, drainage, safe entry and local access permissions."); }
+      if (d.roads === "poor") { deduct("access", 18); risk(risks, "Road access", "High", "General access appears limited."); rec.push("Conduct a transport-accessibility review with relevant local authorities."); }
+      if (d.roads === "unknown") { deduct("access", 10); risk(risks, "Access data", "Unknown", "Access conditions have not been assessed."); rec.push("Verify general road connectivity and applicable access permissions."); }
+      if (d.residential === "near") { deduct("environment", 12); risk(risks, "Nearby communities", "High", "Noise, traffic, air quality and other community impacts require review."); rec.push("Assess land-use compatibility and applicable noise, air-quality and separation requirements."); }
+      if (d.residential === "medium") { deduct("environment", 5); risk(risks, "Community impacts", "Medium", "Potential community impacts need evaluation."); rec.push("Review traffic, noise, air quality and other potential effects on nearby communities."); }
+      if (d.residential === "unknown") { deduct("environment", 8); risk(risks, "Community mapping", "Unknown", "Nearby sensitive receptors have not been verified."); rec.push("Verify nearby homes, schools, hospitals and other sensitive receptors using appropriate public data."); }
+      if (d.protected === "near") { deduct("environment", 15); risk(risks, "Sensitive environment", "High", "Potential impacts on sensitive ecosystems or restricted areas need review."); rec.push("Check authoritative protected-area boundaries and applicable environmental restrictions."); }
+      if (d.protected === "overlap") { deduct("environment", 30); risk(risks, "Potential land-use restriction", "High", "Potential overlap or a restriction needs formal verification."); rec.push("Pause site selection until competent authorities verify boundaries, land use and legal constraints."); }
+      if (d.protected === "unknown") { deduct("environment", 15); risk(risks, "Environmental data", "Unknown", "Protected-area and ecological constraints have not been verified."); rec.push("Check authoritative environmental maps and land-use records."); }
+      if (d.emissions === "medium") { deduct("environment", 6); risk(risks, "Environmental impact", "Medium", "Emission sources and controls need assessment."); rec.push("Estimate process-related emissions and identify suitable monitoring and control measures."); }
+      if (d.emissions === "high") { deduct("environment", 14); risk(risks, "Environmental impact", "High", "Potentially high impacts require detailed review."); rec.push("Prepare a process-specific environmental assessment and verify applicable permissions."); }
+      if (d.emissions === "unknown") { deduct("environment", 8); risk(risks, "Impact estimate", "Unknown", "Expected environmental impacts have not been estimated."); rec.push("Prepare an initial environmental inventory before making a final site decision."); }
+      if (d.waste === "partial") { deduct("environment", 7); risk(risks, "Waste plan", "Medium", "Waste arrangements require further detail."); rec.push("Document waste types, segregation, treatment and authorized disposal routes."); }
+      if (d.waste === "none") { deduct("environment", 16); risk(risks, "Waste plan", "High", "No waste management plan has been identified."); rec.push("Develop an appropriate waste management plan before the facility proceeds."); }
+      if (d.fire === "partial") { deduct("resilience", 10); risk(risks, "Fire preparedness", "Medium", "Some fire safety arrangements remain unverified."); rec.push("Have a qualified safety professional review fire detection, suppression, access and evacuation provisions."); }
+      if (d.fire === "missing") { deduct("resilience", 20); risk(risks, "Fire preparedness", "High", "Fire and emergency readiness has not been assessed."); rec.push("Complete a formal fire and life-safety assessment against applicable requirements."); }
+      if (d.continuity === "partial") { deduct("resilience", 8); risk(risks, "Service continuity", "Medium", "Some essential-service continuity gaps remain."); rec.push("Document continuity arrangements for essential utilities and critical support services."); }
+      if (d.continuity === "missing") { deduct("resilience", 15); risk(risks, "Service continuity", "High", "Continuity planning is not yet documented."); rec.push("Create an all-hazards continuity plan and define review and exercise procedures."); }
+      scores.terrain = Math.max(0, terrain); scores.environment = Math.max(0, environment); scores.utilities = Math.max(0, utilities); scores.access = Math.max(0, access); scores.resilience = Math.max(0, resilience);
+      const weights = { terrain: .25, environment: .25, utilities: .20, access: .15, resilience: .15 };
+      const score = Math.round(Object.keys(weights).reduce((sum, k) => sum + scores[k] * weights[k], 0));
+      if (!rec.length) rec.push("No major issues were flagged by the entered values; verify all information with authoritative data and qualified professionals.");
+      rec.push("Confirm applicable land-use, environmental, building, fire and safety requirements with the relevant authorities.");
+      rec.push("Record data sources, survey dates and uncertainties; update this screening when better information becomes available.");
+      const critical = (d.flood === "high" || d.soil === "weak" || d.protected === "overlap");
+      const unknown = [d.slope, d.soil, d.flood, d.seismic, d.water, d.roads, d.residential, d.protected, d.emissions].includes("unknown");
+      let status, cls, summary;
+      if (critical) { status = "Significant constraint flagged"; cls = "bad"; summary = "One or more important constraints were entered. This score must not be used to approve the site; investigate the flagged issue with competent authorities and qualified specialists."; }
+      else if (unknown) { status = "Evidence incomplete"; cls = "warn"; summary = "Some important site information is missing or unverified. Treat the score as provisional and complete the relevant surveys before comparing sites."; }
+      else if (score >= 80) { status = "Favourable preliminary indicators"; cls = ""; summary = "The entered values indicate relatively favourable preliminary conditions. This is not a finding of legal compliance or a guarantee of suitability."; }
+      else if (score >= 60) { status = "Further assessment required"; cls = "warn"; summary = "Some conditions may need mitigation or additional assessment before the site can be evaluated further."; }
+      else { status = "Multiple concerns flagged"; cls = "bad"; summary = "The entered conditions indicate several potential concerns. Review the recommendations and investigate alternatives or mitigations."; }
+      return { score, scores, risks, rec, status, cls, summary, notes: facilityNotes[d.facility] || [] };
+    }
+    function renderList(id, items) { const ul = $(id); ul.innerHTML = ""; items.forEach(t => { const li = document.createElement("li"); li.textContent = t; ul.appendChild(li); }); }
+    function renderReport(d, r) {
+      $("empty").style.display = "none"; $("results").style.display = "block";
+      $("score").textContent = r.score; $("scorebar").style.width = r.score + "%";
+      $("scorebar").style.background = r.score >= 80 ? "var(--green)" : r.score >= 60 ? "var(--amber)" : "var(--red)";
+      $("status").textContent = r.status; $("status").className = "status " + r.cls; $("summary").textContent = d.project + " — " + d.facilityLabel + ". " + r.summary;
+      const c = $("categoryScores"); c.innerHTML = "";
+      Object.entries(r.scores).forEach(([key, val]) => { const row = document.createElement("div"); row.className = "category-row"; row.innerHTML = `<span>${labels[key]}</span><div class="mini-track"><div class="mini-bar" style="width:${val}%"></div></div><strong>${val}</strong>`; c.appendChild(row); });
+      const riskbox = $("risks"); riskbox.innerHTML = "";
+      if (!r.risks.length) { riskbox.innerHTML = '<p style="font-size:12px;color:var(--muted)">No specific risk flags from the entered values. Independent verification is still required.</p>'; }
+      r.risks.forEach(item => { const row = document.createElement("div"); row.className = "riskrow"; const left = document.createElement("div"); const title = document.createElement("strong"); title.textContent = item.name; const p = document.createElement("p"); p.textContent = item.detail; left.append(title, p); const tag = document.createElement("span"); tag.className = "tag " + (item.level === "High" ? "high" : item.level === "Medium" ? "medium" : "unknown"); tag.textContent = item.level; row.append(left, tag); riskbox.appendChild(row); });
+      renderList("recommendations", r.rec); renderList("facilityNotes", r.notes);
+    }
+    $("siteForm").addEventListener("submit", e => {
+      e.preventDefault(); if (!$("siteForm").reportValidity()) return;
+      const facility = $("facility");
+      const d = { project: $("project").value.trim(), facility: facility.value, facilityLabel: facility.options[facility.selectedIndex].text, location: $("location").value.trim(), area: Number($("area").value) };
+      ["slope", "soil", "flood", "seismic", "water", "power", "roads", "residential", "protected", "emissions", "waste", "fire", "continuity"].forEach(k => d[k] = $(k).value);
+      const r = assess(d); renderReport(d, r);
+      $("results").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+    function loadExample() {
+      const values = { project: "Example Regional Support Facility", facility: "maintenance", location: "Illustrative district, India", area: "12", slope: "gentle", soil: "moderate", flood: "medium", seismic: "review", water: "adequate", power: "partial", roads: "good", residential: "medium", protected: "clear", emissions: "medium", waste: "partial", fire: "partial", continuity: "partial", ack: "on" };
+      Object.entries(values).forEach(([id, val]) => { if ($(id)) $(id).value = val; });
+      $("ack").checked = true;
+      document.getElementById("assessment").scrollIntoView({ behavior: "smooth" });
+    }
+    function resetAssessment() {
+      $("siteForm").reset(); $("results").style.display = "none"; $("empty").style.display = "block";
+      $("assessment").scrollIntoView({ behavior: "smooth" });
+    }
+
+    // Blueprint helper: extracts text where possible and checks for general factory
+    // safety/environment planning indicators. It does not interpret geometry or certify a design.
+    let blueprintObjectUrl = null;
+    const blueprintFile = $("blueprintFile");
+    const blueprintStatus = $("blueprintStatus");
+    const blueprintPreview = $("blueprintPreview");
+    const blueprintOutput = $("blueprintOutput");
+
+    function setBlueprintStatus(message) { blueprintStatus.textContent = message; }
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, ch => ({
+        "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+      }[ch]));
+    }
+    function getBlueprintFile() {
+      const file = blueprintFile.files && blueprintFile.files[0];
+      if (!file) { setBlueprintStatus("Choose a PDF, image or text file first."); return null; }
+      const maxBytes = 20 * 1024 * 1024;
+      if (file.size > maxBytes) {
+        setBlueprintStatus("File is larger than 20 MB. Please choose a smaller file.");
+        return null;
+      }
+      return file;
+    }
+    async function extractPdfText(file) {
+      if (!window.pdfjsLib) throw new Error("PDF reader library did not load. Check your internet connection or use an image/text file.");
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+      const bytes = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
+      let text = "";
+      const maxPages = Math.min(pdf.numPages, 12);
+      for (let pageNo = 1; pageNo <= maxPages; pageNo++) {
+        setBlueprintStatus(`Reading PDF text… page ${pageNo} of ${maxPages}`);
+        const page = await pdf.getPage(pageNo);
+        const content = await page.getTextContent();
+        text += content.items.map(item => item.str || "").join(" ") + "\n";
+      }
+      if (pdf.numPages > maxPages) text += `\n[Only the first ${maxPages} pages were scanned in this prototype.]`;
+      return {text, pages: pdf.numPages};
+    }
+    async function extractImageText(file) {
+      if (!window.Tesseract) throw new Error("OCR library did not load. Check your internet connection or enter plan labels in the notes box.");
+      setBlueprintStatus("Reading visible labels in image with OCR…");
+      const result = await Tesseract.recognize(file, "eng", {
+        logger: info => {
+          if (info.status) setBlueprintStatus("Image OCR: " + info.status +
+            (info.progress ? " (" + Math.round(info.progress * 100) + "%)" : ""));
+        }
+      });
+      return {text: result.data.text || "", pages: 1};
+    }
+    function blueprintRecommendations(text, notes) {
+      const combined = (text + "\n" + notes).toLowerCase();
+      const findings = [];
+      const rules = [
+        {terms:["fire exit","emergency exit","exit door","evacuation"], title:"Emergency egress", advice:"Confirm clearly marked, unobstructed escape routes and exits, suitable travel distances, emergency lighting and evacuation signage with a fire-safety professional.", positive:"An exit / evacuation label was detected; verify the route is continuous and unobstructed."},
+        {terms:["fire extinguisher","fire hydrant","sprinkler","fire alarm"], title:"Fire protection", advice:"Check that fire detection and protection are designed for the actual occupancy and hazards, with access for responders and required inspections.", positive:"A fire-protection label was detected; verify coverage, suitability and maintenance requirements."},
+        {terms:["ventilation","exhaust","air handling","fume hood","dust collector"], title:"Ventilation and air quality", advice:"Have a qualified engineer assess ventilation, local exhaust, heat removal and exposure controls for the processes planned in each area.", positive:"A ventilation-related label was detected; verify capacity and placement against the real process needs."},
+        {terms:["wastewater","effluent","etp","sewage treatment","drain"], title:"Water, drainage and effluent", advice:"Show and verify drainage direction, stormwater separation, wastewater treatment needs, spill prevention and lawful discharge arrangements.", positive:"Drainage or wastewater terminology was detected; verify flows, treatment and separation on the engineering drawings."},
+        {terms:["hazardous waste","waste storage","chemical store","chemical storage","battery room"], title:"Waste and material storage", advice:"Confirm compatible, labelled storage; containment and spill response where applicable; safe access; and authorized waste segregation and disposal.", positive:"A storage or waste label was detected; check containment, segregation, access and applicable rules."},
+        {terms:["electrical room","electrical panel","transformer","generator","switchgear"], title:"Electrical safety and utilities", advice:"Ask a qualified electrical engineer to verify access clearances, isolation, earthing, fire separation where required, ventilation and maintenance access.", positive:"An electrical/utility label was detected; verify clearances and safe maintenance access."},
+        {terms:["loading bay","loading dock","dispatch","receiving"], title:"Material movement and traffic", advice:"Review pedestrian/vehicle separation, loading safety, turning space, accessible routes and emergency access without obstructing exits.", positive:"A loading/receiving label was detected; verify safe circulation and separation of people and vehicles."},
+        {terms:["toilet","washroom","accessible wc","ramp","accessible entrance"], title:"Accessibility and welfare", advice:"Check accessible entrances/routes, sanitation, welfare facilities and applicable building-code requirements for intended occupants and visitors.", positive:"A welfare/accessibility label was detected; verify dimensions and code compliance."},
+        {terms:["first aid","medical room","assembly point","muster point"], title:"Emergency arrangements", advice:"Confirm first-aid provision, assembly-point arrangements, signage, communication and coordination with local emergency services.", positive:"An emergency-support label was detected; verify location, signage and response procedures."},
+        {terms:["office","production","assembly","workshop","storage","warehouse"], title:"Room use and zoning", advice:"Label all rooms and their intended occupancy/processes. Check separation of incompatible activities, safe circulation, exits and adequate space with qualified designers.", positive:"One or more room-use labels were detected; ensure the drawing legend and room schedule are complete."}
+      ];
+      let detected = 0;
+      rules.forEach(rule => {
+        const found = rule.terms.some(term => combined.includes(term));
+        if (found) {
+          detected++;
+          findings.push({title:rule.title, detail:rule.positive, type:"detected"});
+          findings.push({title:"Suggested verification: " + rule.title, detail:rule.advice, type:"suggest"});
+        } else {
+          findings.push({title:"Check: " + rule.title, detail:rule.advice, type:"suggest"});
+        }
+      });
+      if (!text.trim() && !notes.trim()) {
+        findings.unshift({title:"No readable labels found", detail:"This may be a scanned drawing, a low-resolution file, or a plan without searchable labels. Add a room schedule/description or use a clearer image. The tool cannot reliably assess geometry from this result.", type:"warn"});
+      } else if (text.trim().length < 40 && !notes.trim()) {
+        findings.unshift({title:"Limited readable information", detail:"Very little text was extracted. Treat all findings as incomplete; OCR can miss small, rotated or handwritten labels.", type:"warn"});
+      }
+      return {findings, detected, textLength:text.trim().length};
+    }
+    function renderBlueprintReview(result, fileName) {
+      blueprintOutput.style.display = "block";
+      const grouped = result.findings.map(item =>
+        `<li><strong>${escapeHTML(item.title)}:</strong> ${escapeHTML(item.detail)}</li>`).join("");
+      blueprintOutput.innerHTML =
+        `<span class="status warn">Preliminary review — not a design approval</span>
+         <h4>Blueprint scan summary</h4>
+         <p style="font-size:12px;color:var(--muted)">File: ${escapeHTML(fileName)} · ${result.detected} review categories had recognizable labels · ${result.textLength} readable characters extracted.</p>
+         <h4>Potential changes and checks</h4><ul>${grouped}</ul>
+         <div class="bp-warning">This browser-only prototype searches extracted text/OCR for general factory safety, environmental and accessibility indicators. It does not reliably interpret dimensions, scale, room geometry, structural integrity or code compliance. A missing label does not prove a feature is absent. Have the complete drawing reviewed by qualified architects, engineers, fire-safety professionals and relevant authorities.</div>`;
+    }
+    async function analyzeBlueprint() {
+      const file = getBlueprintFile();
+      if (!file) return;
+      blueprintOutput.style.display = "none";
+      const notes = $("blueprintNotes").value || "";
+      try {
+        let extracted = {text:"", pages:1};
+        const ext = file.name.split(".").pop().toLowerCase();
+        if (ext === "pdf" || file.type === "application/pdf") {
+          extracted = await extractPdfText(file);
+          if (!extracted.text.trim()) {
+            setBlueprintStatus("No selectable PDF text found. Trying OCR on the first page…");
+            if (window.pdfjsLib && window.Tesseract) {
+              pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+              const pdf = await pdfjsLib.getDocument({data: await file.arrayBuffer()}).promise;
+              const page = await pdf.getPage(1);
+              const viewport = page.getViewport({scale:1.8});
+              const canvas = document.createElement("canvas");
+              canvas.width = viewport.width; canvas.height = viewport.height;
+              await page.render({canvasContext:canvas.getContext("2d"), viewport}).promise;
+              const ocr = await Tesseract.recognize(canvas, "eng");
+              extracted.text = ocr.data.text || "";
+            }
+          }
+          setBlueprintStatus(`PDF scan finished (${extracted.pages} page(s); first 12 pages maximum for text extraction).`);
+        } else if (["png","jpg","jpeg","webp"].includes(ext) || file.type.startsWith("image/")) {
+          extracted = await extractImageText(file);
+          setBlueprintStatus("Image label scan finished. Review the detected text and suggestions below.");
+        } else if (ext === "txt" || file.type.startsWith("text/")) {
+          extracted.text = await file.text();
+          setBlueprintStatus("Text file read successfully.");
+        } else {
+          throw new Error("Unsupported file type. Use PDF, PNG, JPG, WEBP or TXT.");
+        }
+        const review = blueprintRecommendations(extracted.text, notes);
+        renderBlueprintReview(review, file.name);
+      } catch (error) {
+        setBlueprintStatus("Could not analyze file: " + error.message);
+      }
+    }
+    function previewBlueprint() {
+      const file = getBlueprintFile();
+      if (!file) return;
+      blueprintPreview.style.display = "block";
+      blueprintPreview.innerHTML = "";
+      const ext = file.name.split(".").pop().toLowerCase();
+      if (file.type.startsWith("image/") || ["png","jpg","jpeg","webp"].includes(ext)) {
+        if (blueprintObjectUrl) URL.revokeObjectURL(blueprintObjectUrl);
+        blueprintObjectUrl = URL.createObjectURL(file);
+        const img = document.createElement("img"); img.alt = "Blueprint preview"; img.src = blueprintObjectUrl;
+        blueprintPreview.appendChild(img);
+        setBlueprintStatus("Image preview ready. Select Analyze blueprint to scan visible labels.");
+      } else {
+        const msg = document.createElement("p");
+        msg.textContent = `${file.name} (${(file.size/1024/1024).toFixed(2)} MB). PDF/text preview is not embedded here; select Analyze blueprint to read it.`;
+        blueprintPreview.appendChild(msg);
+        setBlueprintStatus("File selected and ready for analysis.");
+      }
+    }
+    $("previewBlueprint").addEventListener("click", previewBlueprint);
+
+    $("launch3DViewer").addEventListener("click", async () => {
+      const file = getBlueprintFile();
+      if (!file) {
+        blueprintFile.click();
+        return;
+      }
+      const notes = $("blueprintNotes").value || "";
+      setBlueprintStatus(`Loading ${file.name} into 3D Spatial Twin...`);
+      try {
+        await saveBlueprintForAnalysis(file, notes);
+      } catch (e) {
+        console.warn("Storage sync skipped:", e);
+      }
+      window.location.href = "blueprint_3d_spatial.html";
+    });
+
+    function saveBlueprintForAnalysis(file, notes) {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open("DefenceSiteAIReview", 1);
+        request.onupgradeneeded = () => {
+          const db = request.result;
+          if (!db.objectStoreNames.contains("blueprints")) db.createObjectStore("blueprints");
+        };
+        request.onerror = () => reject(request.error || new Error("Browser storage is unavailable."));
+        request.onsuccess = () => {
+          const db = request.result;
+          const tx = db.transaction("blueprints", "readwrite");
+          tx.objectStore("blueprints").put({
+            blob: file,
+            name: file.name,
+            type: file.type || "",
+            size: file.size,
+            notes,
+            submittedAt: new Date().toISOString()
+          }, "latest");
+          tx.oncomplete = () => { db.close(); resolve(); };
+          tx.onerror = () => { db.close(); reject(tx.error || new Error("Could not save the selected file.")); };
+        };
+      });
+    }
+
+    blueprintFile.addEventListener("change", async () => {
+      blueprintPreview.style.display = "none";
+      blueprintOutput.style.display = "none";
+      const file = blueprintFile.files && blueprintFile.files[0];
+      if (!file) return;
+
+      setBlueprintStatus(`Selected: ${file.name} (${(file.size/1024/1024).toFixed(2)} MB). Saving & launching 3D Spatial Twin directly...`);
+      const notes = $("blueprintNotes").value || "";
+      try {
+        await saveBlueprintForAnalysis(file, notes);
+      } catch (err) {
+        console.warn("Auto-save:", err);
+      }
+      // Instant direct transition to 3D Spatial Analysis!
+      setTimeout(() => {
+        window.location.href = "blueprint_3d_spatial.html";
+      }, 400);
+    });
+  </script>
+</body>
+
+</html> 

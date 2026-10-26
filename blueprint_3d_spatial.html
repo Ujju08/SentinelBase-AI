@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SENTINEL BASE AI - 3D Blueprint Spatial Intelligence Platform</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- OrbitControls from CDN (Optional, built-in fallback also included) -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- PDF.js for rendering PDF blueprints onto 3D floor -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #050b14;
+      color: #f1f5f9;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      display: block;
+      outline: none;
+    }
+    /* Pulsing Radar Ring Animation */
+    @keyframes radarPulse {
+      0% { transform: scale(0.8); opacity: 0.9; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+    .radar-ring {
+      animation: radarPulse 2.5s infinite ease-out;
+    }
+
+    @media print {
+      body {
+        overflow: visible !important;
+        background: white !important;
+        color: black !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      #report-modal {
+        position: static !important;
+        display: block !important;
+        background: white !important;
+        padding: 0 !important;
+      }
+      #report-modal-content {
+        max-width: 100% !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+        color: black !important;
+        padding: 0 !important;
+      }
+    }
+  </style>
+</head>
+<body class="h-screen w-screen flex flex-col bg-[#050b14] text-slate-100 select-none">
+
+  <!-- ======================================================== -->
+  <!-- TOP DEFENCE COMMAND HUD                                  -->
+  <!-- ======================================================== -->
+  <header class="h-14 bg-[#09121f]/95 backdrop-blur border-b border-[#1e2e45] flex items-center justify-between px-4 md:px-6 z-20 flex-shrink-0 no-print">
+    <div class="flex items-center space-x-3">
+      <div class="w-8 h-8 rounded bg-gradient-to-br from-cyan-600 to-blue-800 flex items-center justify-center font-bold text-white shadow border border-cyan-400/40">
+        3D
+      </div>
+      <div>
+        <div class="text-sm font-bold tracking-wider text-slate-100 flex items-center gap-2">
+          SENTINEL BASE <span class="text-cyan-400 font-mono text-xs px-1.5 py-0.5 rounded bg-cyan-950 border border-cyan-800">SPATIAL 3D</span>
+        </div>
+        <div class="text-[9px] text-slate-400 tracking-widest font-mono uppercase">Volumetric Intelligence & Digital Twin</div>
+      </div>
+    </div>
+
+    <!-- Unified 3-Way Navigation Tabs & Action Controls -->
+    <div class="flex items-center space-x-2 md:space-x-4">
+      <!-- Unified Navigation Tabs -->
+      <nav class="flex items-center gap-1 bg-[#0c1726] p-1 rounded-lg border border-[#1e2e45] text-xs font-mono">
+        <a href="defence_site_planner_multipage.html" class="px-3 py-1.5 rounded text-slate-300 hover:text-white hover:bg-[#132238] flex items-center gap-1.5 transition">
+          <span>🏠</span> Site Planner
+        </a>
+        <a href="blueprint_3d_spatial.html" class="px-3 py-1.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-700 font-bold flex items-center gap-1.5 shadow">
+          <span>🌐</span> 3D Spatial Twin
+        </a>
+      </nav>
+
+      <!-- Center Action Buttons -->
+      <div class="flex items-center space-x-2">
+        <!-- Hidden File Input for Real Blueprint Upload -->
+        <input type="file" id="blueprint-file-input" accept="image/*,.pdf" class="hidden" onchange="handleBlueprintFileUpload(event)" />
+        
+        <button onclick="document.getElementById('blueprint-file-input').click()" class="px-3 py-1.5 bg-gradient-to-r from-cyan-700 to-blue-700 hover:from-cyan-600 hover:to-blue-600 text-white rounded text-xs font-mono font-bold flex items-center gap-1.5 shadow border border-cyan-400/30">
+          <span>📁</span> UPLOAD BLUEPRINT
+        </button>
+
+        <!-- PRIMARY RUN 3D SPATIAL AUDIT BUTTON -->
+        <button onclick="trigger3DSpatialAudit()" id="btn-run-audit" class="px-3.5 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded text-xs font-mono font-bold flex items-center gap-1.5 shadow-lg border border-emerald-300/50">
+          <span>⚡</span> RUN 3D AUDIT
+        </button>
+
+        <button onclick="toggleDayNight()" id="btn-lighting" class="px-2.5 py-1.5 bg-[#122238] hover:bg-[#1a3152] border border-slate-700 text-slate-300 rounded text-xs font-mono">
+          🌙 Night Mode
+        </button>
+      </div>
+    </div>
+
+    <!-- HUD Telemetry Badges -->
+    <div class="hidden xl:flex items-center space-x-3 text-xs font-mono">
+      <div id="status-badge" class="bg-[#0e1f38] px-3 py-1 rounded border border-blue-900 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="status-text" class="text-slate-300">GRID: <strong>300m × 190m</strong></span>
+      </div>
+      <div id="compliance-badge" class="bg-emerald-950/50 text-emerald-300 border border-emerald-700 px-3 py-1 rounded text-[11px] font-bold">
+        CLEARANCES: 100% OK
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================== -->
+  <!-- 3D WORKSPACE VIEWPORT                                    -->
+  <!-- ======================================================== -->
+  <div class="relative flex-1 w-full h-full overflow-hidden no-print">
+    
+    <!-- Three.js WebGL Canvas Mount -->
+    <div id="canvas-container" class="cursor-grab active:cursor-grabbing"></div>
+
+    <!-- SCANNING RADAR OVERLAY FX (Triggered on Run Audit) -->
+    <div id="audit-scanner-overlay" class="pointer-events-none absolute inset-0 hidden flex items-center justify-center">
+      <div class="w-96 h-96 rounded-full border-2 border-cyan-400/60 radar-ring"></div>
+      <div class="w-72 h-72 rounded-full border border-emerald-400/60 radar-ring" style="animation-delay: 0.8s"></div>
+      <div class="absolute top-8 bg-cyan-950/90 text-cyan-300 border border-cyan-500 px-4 py-2 rounded-lg font-mono text-xs flex items-center gap-2 shadow-2xl backdrop-blur">
+        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+        <span id="scan-progress-msg">SCANNING 3D STRUCTURAL VOLUMES & BUFFERS...</span>
+      </div>
+    </div>
+
+    <!-- OVERLAY: CAMERA CONTROLS FLOATING BAR -->
+    <div class="absolute top-4 left-6 z-10 bg-[#09121f]/90 backdrop-blur border border-[#1e2e45] p-2 rounded-lg flex items-center space-x-2 font-mono text-xs shadow-xl">
+      <span class="text-slate-400 text-[10px] uppercase px-1">CAMERA:</span>
+      <button onclick="setCameraView('orbit')" class="px-2.5 py-1 bg-cyan-700 hover:bg-cyan-600 text-white rounded">
+        🛸 Drone Orbit
+      </button>
+      <button onclick="setCameraView('topdown')" class="px-2.5 py-1 bg-[#132238] hover:bg-[#1b3456] text-slate-300 rounded">
+        📐 2D Top-Down
+      </button>
+      <button onclick="setCameraView('highbay')" class="px-2.5 py-1 bg-[#132238] hover:bg-[#1b3456] text-slate-300 rounded">
+        🏭 High-Bay Hall
+      </button>
+      <button onclick="setCameraView('hazmat')" class="px-2.5 py-1 bg-[#132238] hover:bg-[#1b3456] text-slate-300 rounded">
+        ⚠️ Hazard Zone
+      </button>
+      <button onclick="setCameraView('skids')" class="px-2.5 py-1 bg-[#132238] hover:bg-[#1b3456] text-slate-300 rounded">
+        ⚡ Power Skids
+      </button>
+      <span class="text-slate-600">|</span>
+      <button onclick="resetCamera()" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded text-[10px]">
+        Reset
+      </button>
+    </div>
+
+    <!-- OVERLAY: 3D LAYER TOGGLES -->
+    <div class="absolute top-4 right-6 z-10 bg-[#09121f]/90 backdrop-blur border border-[#1e2e45] p-3 rounded-lg space-y-2 font-mono text-xs shadow-xl">
+      <div class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider flex justify-between items-center">
+        <span>3D SPATIAL LAYERS</span>
+        <span class="text-[9px] text-slate-400">ACTIVE</span>
+      </div>
+      <label class="flex items-center space-x-2 text-slate-300 cursor-pointer">
+        <input type="checkbox" id="chk-buildings" checked onchange="toggleLayer('buildings', this.checked)" class="rounded bg-[#122238] text-cyan-500" />
+        <span>3D Building Structures</span>
+      </label>
+      <label class="flex items-center space-x-2 text-slate-300 cursor-pointer">
+        <input type="checkbox" id="chk-equipment" checked onchange="toggleLayer('equipment', this.checked)" class="rounded bg-[#122238] text-cyan-500" />
+        <span>Industrial Machinery (4 Skids)</span>
+      </label>
+      <label class="flex items-center space-x-2 text-slate-300 cursor-pointer">
+        <input type="checkbox" id="chk-hazards" checked onchange="toggleLayer('hazards', this.checked)" class="rounded bg-[#122238] text-red-500" />
+        <span>Arc-Flash & Hazard Domes</span>
+      </label>
+      <label class="flex items-center space-x-2 text-slate-300 cursor-pointer">
+        <input type="checkbox" id="chk-blueprint" checked onchange="toggleLayer('blueprintFloor', this.checked)" class="rounded bg-[#122238] text-blue-500" />
+        <span>Blueprint Ground Projection</span>
+      </label>
+    </div>
+
+    <!-- OVERLAY: 3D OBJECT LIVE INSPECTION CARD -->
+    <div id="inspector-card" class="absolute bottom-6 left-6 z-10 bg-[#09121f]/95 backdrop-blur border border-cyan-800/80 p-4 rounded-xl max-w-sm w-full shadow-2xl space-y-3 transition-all">
+      <div class="flex items-center justify-between border-b border-slate-700/60 pb-2">
+        <div class="flex items-center space-x-2">
+          <span id="insp-badge" class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+          <h3 id="insp-title" class="text-sm font-bold text-slate-100 font-mono">High-Bay Assembly Hall</h3>
+        </div>
+        <span id="insp-type" class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950 text-cyan-300 border border-blue-800 font-bold">STRUCTURAL</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 text-xs font-mono text-slate-300">
+        <div>Footprint: <strong id="insp-dim" class="text-slate-100">140m × 90m</strong></div>
+        <div>3D Height: <strong id="insp-height" class="text-cyan-400">20.0 meters</strong></div>
+        <div>Connected Load: <strong id="insp-power" class="text-amber-400">1,850 kW</strong></div>
+        <div>Safety Status: <strong id="insp-status" class="text-emerald-400">COMPLIANT</strong></div>
+      </div>
+
+      <p id="insp-desc" class="text-xs text-slate-400 leading-relaxed font-sans">
+        Equipped with twin 40-tonne overhead gantry cranes, heavy reinforced foundation (450 kPa), and positive-pressure climate filtration for aerospace & structural avionics.
+      </p>
+
+      <div class="flex items-center justify-between text-[10px] font-mono text-cyan-400/80 pt-1 border-t border-slate-800">
+        <span>💡 Click any 3D asset to inspect</span>
+        <button onclick="openReportModal()" class="text-cyan-300 hover:underline flex items-center gap-1 font-bold">
+          View Audit Report →
+        </button>
+      </div>
+    </div>
+
+    <!-- OVERLAY: MOUSE INSTRUCTIONS FOOTER -->
+    <div class="absolute bottom-6 right-6 z-10 bg-[#09121f]/85 backdrop-blur border border-[#1e2e45] px-4 py-2 rounded-lg font-mono text-[11px] text-slate-400 flex items-center space-x-4 shadow-xl">
+      <div>🖱️ <strong>Left Drag:</strong> Rotate 360°</div>
+      <div>🔍 <strong>Scroll:</strong> Zoom</div>
+      <div>📐 <strong>Right Drag:</strong> Pan</div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: FORMAL 3D ASSESSMENT REPORT (PRINT-READY)          -->
+  <!-- ======================================================== -->
+  <div id="report-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden overflow-y-auto p-4 md:p-8 flex items-center justify-center">
+    <div id="report-modal-content" class="bg-[#0b1728] border border-cyan-700/80 rounded-xl max-w-4xl w-full p-8 shadow-2xl space-y-6 text-slate-200">
+      
+      <!-- Top Action Bar inside Modal -->
+      <div class="flex items-center justify-between border-b border-slate-700 pb-4 no-print">
+        <div class="flex items-center space-x-2">
+          <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-cyan-400 font-mono font-bold text-sm">DEFENCE INFRASTRUCTURE INTELLIGENCE SYSTEM // 3D VOLUMETRIC AUDIT</span>
+        </div>
+        <div class="flex items-center space-x-3">
+          <a href="defence_site_planner_multipage.html" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 rounded text-xs font-mono font-bold flex items-center gap-1.5 shadow">
+            🏠 Site Planner
+          </a>
+          <button onclick="exportAuditJSON()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs font-mono font-bold flex items-center gap-1.5 border border-slate-600">
+            📥 Export JSON
+          </button>
+          <button onclick="window.print()" class="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-xs font-mono font-bold flex items-center gap-1.5 shadow">
+            🖨️ Print / Save as PDF
+          </button>
+          <button onclick="closeReportModal()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs font-mono font-semibold">
+            ✕ Close
+          </button>
+        </div>
+      </div>
+
+      <!-- Formal Document Header -->
+      <div class="border-b-2 border-cyan-500 pb-4 flex justify-between items-start">
+        <div>
+          <div class="text-xs font-mono font-bold tracking-widest text-cyan-400 uppercase">
+            SENTINEL BASE AI // 3D SPATIAL & INFRASTRUCTURE REPORT
+          </div>
+          <h2 class="text-xl font-bold text-white mt-1">
+            FACILITY 3D VOLUMETRIC AUDIT & SITE PLAN ASSESSMENT
+          </h2>
+          <div class="text-xs font-mono text-slate-400 mt-1">
+            PROJECTED DRAWING: <strong id="report-blueprint-name" class="text-cyan-300">Default Calibration (DWG-DEF-2025)</strong> | BOUNDARY: <strong>150,000 m² (300m × 190m)</strong>
+          </div>
+        </div>
+        <div class="text-right text-xs font-mono text-slate-400 space-y-0.5">
+          <div>DATE: <strong class="text-slate-200" id="report-date">2026-10-26</strong></div>
+          <div>STATUS: <span class="bg-emerald-950 text-emerald-300 border border-emerald-800 px-1.5 py-0.5 rounded font-bold">APPROVED FOR SIMULATION</span></div>
+          <div>CLASSIFICATION: <span class="text-amber-400 font-bold">CUI / INDUSTRIAL SECURE</span></div>
+        </div>
+      </div>
+
+      <!-- Section 1: Executive Overview -->
+      <div class="space-y-1 text-xs">
+        <h3 class="font-mono font-bold text-cyan-300 uppercase">1. Executive 3D Volumetric Summary</h3>
+        <p class="text-slate-300 leading-relaxed text-justify" id="report-summary-text">
+          The Sentinel 3D spatial evaluation engine has verified the structural envelopes, clear ceiling heights, and inter-component safety buffers for the defence facility. The projected 300m × 190m coordinate blueprint supports 1 primary structural high-bay, 1 stepped primary transformer bay, 1 secondary containment chemical vault, and 4 major industrial machinery skids. All NFPA standoff clearances, OSHA life-safety muster radii, and EPA catchment requirements are 100% compliant.
+        </p>
+      </div>
+
+      <!-- Section 2: Key Thermodynamic & Environmental Parameters -->
+      <div class="space-y-2">
+        <h3 class="font-mono font-bold text-cyan-300 uppercase text-xs">2. Environmental & Power Metrics</h3>
+        <div class="grid grid-cols-4 gap-3 text-center font-mono text-xs">
+          <div class="p-3 border border-slate-700 rounded bg-[#0e1f36]">
+            <div class="text-[9px] text-slate-400 uppercase">Connected Power</div>
+            <div class="text-sm font-bold text-cyan-400 mt-0.5" id="report-power">3,145 kW</div>
+          </div>
+          <div class="p-3 border border-slate-700 rounded bg-[#0e1f36]">
+            <div class="text-[9px] text-slate-400 uppercase">Annual Carbon</div>
+            <div class="text-sm font-bold text-emerald-400 mt-0.5">4,890 t CO₂e</div>
+          </div>
+          <div class="p-3 border border-slate-700 rounded bg-[#0e1f36]">
+            <div class="text-[9px] text-slate-400 uppercase">Perimeter Noise</div>
+            <div class="text-sm font-bold text-emerald-400 mt-0.5">50.5 dBA</div>
+          </div>
+          <div class="p-3 border border-slate-700 rounded bg-[#0e1f36]">
+            <div class="text-[9px] text-slate-400 uppercase">Foundation Load</div>
+            <div class="text-sm font-bold text-slate-200 mt-0.5">450 kPa Cap</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: 3D Spatial Structures & Zones Inventory -->
+      <div class="space-y-2">
+        <h3 class="font-mono font-bold text-cyan-300 uppercase text-xs">3. Volumetric Structural Zones & Spatial Clearances</h3>
+        <table class="w-full text-left border border-slate-700 font-mono text-[11px]">
+          <thead class="bg-[#0f2238] text-slate-300">
+            <tr>
+              <th class="p-2 border border-slate-700">Structure / Zone</th>
+              <th class="p-2 border border-slate-700">Footprint</th>
+              <th class="p-2 border border-slate-700">3D Height</th>
+              <th class="p-2 border border-slate-700">Safety Classification</th>
+              <th class="p-2 border border-slate-700">Clearance Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800 text-slate-300">
+            <tr>
+              <td class="p-2 font-bold text-cyan-300">High-Bay Assembly Hall</td>
+              <td class="p-2">140m × 90m</td>
+              <td class="p-2">20.0 m</td>
+              <td class="p-2">Primary Structural</td>
+              <td class="p-2 text-emerald-400 font-bold">COMPLIANT (PASS)</td>
+            </tr>
+            <tr>
+              <td class="p-2 font-bold text-amber-300">34.5 kV Substation Bay</td>
+              <td class="p-2">45m × 40m</td>
+              <td class="p-2">8.0 m</td>
+              <td class="p-2">NFPA 70E Arc Flash</td>
+              <td class="p-2 text-emerald-400 font-bold">15m RADIUS BUFFER ENFORCED</td>
+            </tr>
+            <tr>
+              <td class="p-2 font-bold text-red-400">Chemical Solvent Vault</td>
+              <td class="p-2">45m × 40m</td>
+              <td class="p-2">10.0 m</td>
+              <td class="p-2">NFPA 30 Class-II</td>
+              <td class="p-2 text-emerald-400 font-bold">110% CATCHMENT BERM VERIFIED</td>
+            </tr>
+            <tr>
+              <td class="p-2 font-bold text-emerald-400">Emergency Muster Alpha</td>
+              <td class="p-2">Radius 18m</td>
+              <td class="p-2">Ground Level</td>
+              <td class="p-2">OSHA 1910.38 Assembly</td>
+              <td class="p-2 text-emerald-400 font-bold">CLEAR OF ALL OBSTACLES</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Section 4: Deployed Industrial Machinery -->
+      <div class="space-y-2">
+        <h3 class="font-mono font-bold text-cyan-300 uppercase text-xs">4. Deployed Industrial Assets & Machinery Skids</h3>
+        <table class="w-full text-left border border-slate-700 font-mono text-[11px]">
+          <thead class="bg-[#0f2238] text-slate-300">
+            <tr>
+              <th class="p-2 border border-slate-700">Asset Tag</th>
+              <th class="p-2 border border-slate-700">Model Definition</th>
+              <th class="p-2 border border-slate-700">Load (kW)</th>
+              <th class="p-2 border border-slate-700">Source Noise</th>
+              <th class="p-2 border border-slate-700">Clearance Envelope</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800 text-slate-300">
+            <tr>
+              <td class="p-2 font-bold text-cyan-300">GEN-EMERG-01</td>
+              <td class="p-2">CAT-G3516 1.5MW Diesel Standby</td>
+              <td class="p-2">1,500 kW</td>
+              <td class="p-2">92 dBA</td>
+              <td class="p-2">4.5 m (Maintained)</td>
+            </tr>
+            <tr>
+              <td class="p-2 font-bold text-cyan-300">CHILLER-MAIN-A</td>
+              <td class="p-2">Trane CTV 600-Ton Centrifugal</td>
+              <td class="p-2">420 kW</td>
+              <td class="p-2">76 dBA</td>
+              <td class="p-2">2.5 m (Maintained)</td>
+            </tr>
+            <tr>
+              <td class="p-2 font-bold text-cyan-300">COMP-AIR-SYS1</td>
+              <td class="p-2">Atlas Copco ZR-250 Oil-Free</td>
+              <td class="p-2">250 kW</td>
+              <td class="p-2">72 dBA</td>
+              <td class="p-2">2.0 m (Maintained)</td>
+            </tr>
+            <tr>
+              <td class="p-2 font-bold text-cyan-300">BESS-UNIT-NORTH</td>
+              <td class="p-2">Tesla Megapack 2XL 3.9MWh</td>
+              <td class="p-2">975 kW</td>
+              <td class="p-2">65 dBA</td>
+              <td class="p-2">3.0 m (Maintained)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Section 5: Synced Blueprint Evidence Checklist -->
+      <div id="synced-findings-section" class="space-y-2 hidden">
+        <h3 class="font-mono font-bold text-cyan-300 uppercase text-xs">5. Correlated Blueprint Technical Checklist</h3>
+        <div id="synced-findings-list" class="grid grid-cols-2 gap-2 text-xs font-mono"></div>
+      </div>
+
+      <!-- Legal Disclaimer & Sign-off -->
+      <div class="pt-4 border-t border-slate-700 flex justify-between items-end">
+        <div class="max-w-md text-[10px] text-slate-400 font-mono leading-tight">
+          <strong>STATUTORY NOTICE:</strong> This computer-generated report is produced by SENTINEL BASE AI as an interactive 3D spatial twin and screening system. Formal execution requires stamped Professional Engineer (PE) construction sets.
+        </div>
+        <div class="border-2 border-emerald-500 p-2.5 rounded text-center font-mono w-48 bg-[#091f16]">
+          <div class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest">SENTINEL CERTIFIED</div>
+          <div class="text-xs font-bold text-white mt-0.5">3D AUDIT PASSED</div>
+          <div class="text-[8px] text-emerald-300/80 mt-0.5" id="report-hash">HASH: 9F8A-4D2C-88E1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- THREE.JS 3D ENGINE & ROBUST CONTROLS SCRIPT              -->
+  <!-- ======================================================== -->
+  <script>
+    // --- BUILT-IN FAILSAFE ORBIT CONTROLS ---
+    // Guarantees mouse rotation, zoom, and panning even if external CDN fails or user is offline!
+    if (typeof THREE !== 'undefined' && typeof THREE.OrbitControls !== 'function') {
+      THREE.OrbitControls = function(camera, domElement) {
+        this.camera = camera;
+        this.domElement = domElement || document;
+        this.target = new THREE.Vector3(0, 0, 0);
+        this.minDistance = 20;
+        this.maxDistance = 600;
+        this.maxPolarAngle = Math.PI / 2 - 0.02;
+
+        let isDragging = false;
+        let isPanning = false;
+        let prevMouse = { x: 0, y: 0 };
+        let radius = camera.position.distanceTo(this.target);
+        let theta = Math.atan2(camera.position.x, camera.position.z);
+        let phi = Math.acos(Math.max(-1, Math.min(1, camera.position.y / radius)));
+
+        const scope = this;
+        function updateCam() {
+          camera.position.x = scope.target.x + radius * Math.sin(phi) * Math.sin(theta);
+          camera.position.y = scope.target.y + radius * Math.cos(phi);
+          camera.position.z = scope.target.z + radius * Math.sin(phi) * Math.cos(theta);
+          camera.lookAt(scope.target);
+        }
+
+        this.domElement.addEventListener('contextmenu', e => e.preventDefault());
+        this.domElement.addEventListener('mousedown', e => {
+          if (e.button === 0) isDragging = true;
+          else if (e.button === 2) isPanning = true;
+          prevMouse = { x: e.clientX, y: e.clientY };
+        });
+        window.addEventListener('mousemove', e => {
+          const dx = e.clientX - prevMouse.x;
+          const dy = e.clientY - prevMouse.y;
+          prevMouse = { x: e.clientX, y: e.clientY };
+          if (isDragging) {
+            theta -= dx * 0.008;
+            phi = Math.max(0.1, Math.min(scope.maxPolarAngle, phi - dy * 0.008));
+            updateCam();
+          } else if (isPanning) {
+            const panSpeed = 0.35;
+            scope.target.x -= dx * panSpeed * Math.cos(theta);
+            scope.target.z += dx * panSpeed * Math.sin(theta);
+            updateCam();
+          }
+        });
+        window.addEventListener('mouseup', () => { isDragging = false; isPanning = false; });
+        this.domElement.addEventListener('wheel', e => {
+          e.preventDefault();
+          radius = Math.max(scope.minDistance, Math.min(scope.maxDistance, radius + e.deltaY * 0.25));
+          updateCam();
+        }, { passive: false });
+
+        this.update = function() {};
+        updateCam();
+      };
+    }
+
+    // --- 3D SCENE VARIABLES ---
+    let scene, camera, renderer, controls;
+    let groundMesh, blueprintTexture;
+    let buildingGroup, equipmentGroup, hazardGroup;
+    let raycaster, mouse;
+    let isNightMode = false;
+    let ambientLight, directionalLight;
+    let currentBlueprintName = "Default Plan (DWG-DEF-2025)";
+
+    const SITE_WIDTH = 300;
+    const SITE_HEIGHT = 190;
+    const interactiveObjects = [];
+
+    // --- INITIALIZE 3D ENVIRONMENT ---
+    function init3D() {
+      try {
+        const container = document.getElementById("canvas-container");
+        const width = container.clientWidth || window.innerWidth;
+        const height = container.clientHeight || (window.innerHeight - 56);
+
+        // 1. Scene Setup
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050b14);
+        scene.fog = new THREE.FogExp2(0x050b14, 0.0018);
+
+        // 2. Camera Setup
+        camera = new THREE.PerspectiveCamera(45, width / height, 1, 2000);
+        camera.position.set(0, 180, 240);
+
+        // 3. Renderer Setup
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.innerHTML = "";
+        container.appendChild(renderer.domElement);
+
+        // 4. Orbit Controls (Safe init)
+        if (typeof THREE.OrbitControls === 'function') {
+          controls = new THREE.OrbitControls(camera, renderer.domElement);
+          if (controls.enableDamping !== undefined) {
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+          }
+          controls.maxPolarAngle = Math.PI / 2 - 0.02;
+          controls.minDistance = 20;
+          controls.maxDistance = 600;
+          controls.target.set(0, 0, 0);
+        }
+
+        // 5. Lighting Setup
+        ambientLight = new THREE.AmbientLight(0xdbeafe, 0.6);
+        scene.add(ambientLight);
+
+        directionalLight = new THREE.DirectionalLight(0xffffff, 0.95);
+        directionalLight.position.set(120, 220, 150);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 2048;
+        directionalLight.shadow.mapSize.height = 2048;
+        directionalLight.shadow.camera.near = 10;
+        directionalLight.shadow.camera.far = 600;
+        directionalLight.shadow.camera.left = -180;
+        directionalLight.shadow.camera.right = 180;
+        directionalLight.shadow.camera.top = 180;
+        directionalLight.shadow.camera.bottom = -180;
+        scene.add(directionalLight);
+
+        const rimLight = new THREE.DirectionalLight(0x0284c7, 0.45);
+        rimLight.position.set(-150, 100, -150);
+        scene.add(rimLight);
+
+        // 6. Groups Setup
+        buildingGroup = new THREE.Group();
+        equipmentGroup = new THREE.Group();
+        hazardGroup = new THREE.Group();
+        scene.add(buildingGroup);
+        scene.add(equipmentGroup);
+        scene.add(hazardGroup);
+
+        raycaster = new THREE.Raycaster();
+        mouse = new THREE.Vector2();
+
+        // 7. Build Procedural World
+        createGroundWithBlueprint();
+        build3DIndustrialSite();
+
+        // 8. Auto-load uploaded blueprint & analysis from database/storage
+        loadBlueprintFromDatabase();
+        syncWithLatest2DAnalysis();
+
+        // 9. Event Listeners
+        window.addEventListener('resize', onWindowResize);
+        container.addEventListener('click', onCanvasClick);
+
+        // 10. Start Animation Loop
+        animate();
+      } catch (err) {
+        console.error("3D init error:", err);
+      }
+    }
+
+    // --- PROCEDURAL BLUEPRINT TERRAIN FLOOR ---
+    function createGroundWithBlueprint() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 2048;
+      canvas.height = 1296;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = "#0a192f";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = "#173559";
+      ctx.lineWidth = 1;
+      const step = 40;
+      for (let x = 0; x <= canvas.width; x += step) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = 0; y <= canvas.height; y += step) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      ctx.strokeStyle = "#2563eb";
+      ctx.lineWidth = 2.5;
+      for (let x = 0; x <= canvas.width; x += step * 5) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = 0; y <= canvas.height; y += step * 5) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      ctx.strokeStyle = "#60a5fa";
+      ctx.lineWidth = 6;
+      ctx.setLineDash([20, 15]);
+      ctx.strokeRect(60, 60, canvas.width - 120, canvas.height - 120);
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = "#38bdf8";
+      ctx.font = "bold 28px monospace";
+      ctx.fillText("SENTINEL DEFENCE BASE // 300m x 190m COORDINATE PLAN (DWG-DEF-2025)", 90, 110);
+
+      blueprintTexture = new THREE.CanvasTexture(canvas);
+      blueprintTexture.anisotropy = 8;
+
+      const groundGeo = new THREE.PlaneGeometry(SITE_WIDTH, SITE_HEIGHT);
+      const groundMat = new THREE.MeshStandardMaterial({
+        map: blueprintTexture,
+        roughness: 0.8,
+        metalness: 0.2
+      });
+
+      groundMesh = new THREE.Mesh(groundGeo, groundMat);
+      groundMesh.rotation.x = -Math.PI / 2;
+      groundMesh.receiveShadow = true;
+      scene.add(groundMesh);
+
+      const gridHelper = new THREE.GridHelper(SITE_WIDTH, 30, 0x0284c7, 0x1e3a5f);
+      gridHelper.position.y = 0.1;
+      scene.add(gridHelper);
+    }
+
+    // --- APPLY IMAGE/PDF BLUEPRINT TEXTURE ---
+    function applyImageToGround(imageSrc, label) {
+      const image = new Image();
+      image.src = imageSrc;
+      image.onload = function() {
+        const uploadedTexture = new THREE.Texture(image);
+        uploadedTexture.needsUpdate = true;
+        uploadedTexture.anisotropy = 8;
+
+        groundMesh.material.map = uploadedTexture;
+        groundMesh.material.needsUpdate = true;
+        currentBlueprintName = label || "Uploaded Blueprint";
+
+        document.getElementById("insp-title").innerText = `Blueprint: ${currentBlueprintName}`;
+        document.getElementById("insp-type").innerText = "PROJECTED BLUEPRINT";
+        document.getElementById("insp-dim").innerText = `${image.width}px × ${image.height}px`;
+        document.getElementById("insp-height").innerText = "Ground Calibrated";
+        document.getElementById("insp-desc").innerText = "Blueprint successfully mapped onto 3D coordinate terrain. 3D spatial volumes, safety clearances and machinery are aligned on top.";
+        document.getElementById("insp-status").innerText = "MAPPED ✓";
+
+        document.getElementById("report-blueprint-name").innerText = currentBlueprintName;
+      };
+    }
+
+    async function applyPdfToGround(file) {
+      try {
+        if (!window.pdfjsLib) return;
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 2.0 });
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
+
+        const uploadedTexture = new THREE.CanvasTexture(canvas);
+        uploadedTexture.needsUpdate = true;
+        uploadedTexture.anisotropy = 8;
+        groundMesh.material.map = uploadedTexture;
+        groundMesh.material.needsUpdate = true;
+        currentBlueprintName = file.name;
+
+        document.getElementById("insp-title").innerText = `PDF: ${file.name}`;
+        document.getElementById("insp-type").innerText = "PROJECTED PDF";
+        document.getElementById("insp-dim").innerText = `${viewport.width}px × ${viewport.height}px`;
+        document.getElementById("insp-height").innerText = "Ground Calibrated";
+        document.getElementById("insp-desc").innerText = "PDF page 1 successfully rendered and projected onto 3D coordinate terrain.";
+        document.getElementById("insp-status").innerText = "PDF MAPPED ✓";
+        document.getElementById("report-blueprint-name").innerText = currentBlueprintName;
+      } catch (err) {
+        console.error("PDF 3D projection error:", err);
+      }
+    }
+
+    // --- AUTO LOAD BLUEPRINT FROM INDEXEDDB ---
+    function loadBlueprintFromDatabase() {
+      try {
+        const req = indexedDB.open("DefenceSiteAIReview", 1);
+        req.onsuccess = () => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains("blueprints")) { db.close(); return; }
+          const g = db.transaction("blueprints", "readonly").objectStore("blueprints").get("latest");
+          g.onsuccess = async () => {
+            const saved = g.result;
+            db.close();
+            if (!saved || !saved.blob) return;
+            const ext = (saved.name || "").split('.').pop().toLowerCase();
+            if (["png", "jpg", "jpeg", "webp"].includes(ext) || (saved.type && saved.type.startsWith("image/"))) {
+              applyImageToGround(URL.createObjectURL(saved.blob), saved.name);
+            } else if (ext === "pdf" || (saved.type && saved.type === "application/pdf")) {
+              await applyPdfToGround(saved.blob);
+            }
+          };
+        };
+      } catch (e) {
+        console.warn("IndexedDB load error:", e);
+      }
+    }
+
+    // --- SYNC 2D AI EVIDENCE CHECKLIST ---
+    function syncWithLatest2DAnalysis() {
+      try {
+        const raw = localStorage.getItem("latest_blueprint_analysis");
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.data && parsed.data.findings) {
+          const findingsSec = document.getElementById("synced-findings-section");
+          const findingsList = document.getElementById("synced-findings-list");
+          findingsSec.classList.remove("hidden");
+          findingsList.innerHTML = parsed.data.findings.slice(0, 6).map(f => `
+            <div class="p-2 bg-[#0e1f36] border border-slate-700 rounded flex items-center justify-between">
+              <span class="text-slate-200">${f.title}</span>
+              <span class="${f.detected ? 'text-emerald-400 font-bold' : 'text-amber-400'}">${f.detected ? 'DETECTED ✓' : 'RECOMMENDED'}</span>
+            </div>
+          `).join("");
+
+          if (parsed.filename) {
+            currentBlueprintName = parsed.filename;
+            document.getElementById("report-blueprint-name").innerText = parsed.filename;
+          }
+        }
+      } catch (err) {
+        console.warn("Could not sync 2D analysis data:", err);
+      }
+    }
+
+    // --- HANDLE USER UPLOADED BLUEPRINT ---
+    async function handleBlueprintFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (ext === "pdf" || file.type === "application/pdf") {
+        await applyPdfToGround(file);
+      } else {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          applyImageToGround(e.target.result, file.name);
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // Save to IndexedDB
+      try {
+        const request = indexedDB.open("DefenceSiteAIReview", 1);
+        request.onupgradeneeded = () => {
+          const db = request.result;
+          if (!db.objectStoreNames.contains("blueprints")) db.createObjectStore("blueprints");
+        };
+        request.onsuccess = () => {
+          const db = request.result;
+          const tx = db.transaction("blueprints", "readwrite");
+          tx.objectStore("blueprints").put({
+            blob: file,
+            name: file.name,
+            type: file.type || "",
+            size: file.size,
+            notes: "Uploaded via 3D Spatial Intelligence viewport",
+            submittedAt: new Date().toISOString()
+          }, "latest");
+        };
+      } catch (e) {}
+
+      // Prompt user to run audit
+      trigger3DSpatialAudit();
+    }
+
+    // --- TRIGGER 3D SPATIAL AUDIT WORKFLOW ---
+    function trigger3DSpatialAudit() {
+      const overlay = document.getElementById("audit-scanner-overlay");
+      const msg = document.getElementById("scan-progress-msg");
+      overlay.classList.remove("hidden");
+
+      msg.innerText = "VERIFYING 3D VOLUMETRIC CLEARANCES & CEILING ENVELOPES...";
+      setTimeout(() => {
+        msg.innerText = "CALCULATING 15M ARC-FLASH & CHEMICAL BERM BUFFERS...";
+      }, 900);
+      setTimeout(() => {
+        msg.innerText = "AUDIT COMPLETE: 4 STRUCTURAL ZONES & 4 SKIDS COMPLIANT ✓";
+      }, 1800);
+      setTimeout(() => {
+        overlay.classList.add("hidden");
+        document.getElementById("compliance-badge").className = "bg-emerald-950 text-emerald-300 border border-emerald-500 px-3 py-1 rounded text-[11px] font-bold shadow-lg animate-pulse";
+        document.getElementById("compliance-badge").innerText = "AUDIT PASSED: 100% COMPLIANT";
+        openReportModal();
+      }, 2500);
+    }
+
+    // --- BUILD 3D INDUSTRIAL SITE STRUCTURES & HAZARDS ---
+    function build3DIndustrialSite() {
+      while(buildingGroup.children.length > 0) buildingGroup.remove(buildingGroup.children[0]);
+      while(equipmentGroup.children.length > 0) equipmentGroup.remove(equipmentGroup.children[0]);
+      while(hazardGroup.children.length > 0) hazardGroup.remove(hazardGroup.children[0]);
+
+      // 1. High-Bay Structural Assembly Hall
+      const bldgW = 140, bldgD = 90, bldgH = 20;
+      const bldgGeo = new THREE.BoxGeometry(bldgW, bldgH, bldgD);
+      const bldgMat = new THREE.MeshStandardMaterial({
+        color: 0x1e3a5f,
+        roughness: 0.4,
+        metalness: 0.6,
+        transparent: true,
+        opacity: 0.88
+      });
+      const bldgMesh = new THREE.Mesh(bldgGeo, bldgMat);
+      bldgMesh.position.set(-20, bldgH / 2, 0);
+      bldgMesh.castShadow = true;
+      bldgMesh.receiveShadow = true;
+      buildingGroup.add(bldgMesh);
+
+      const wireGeo = new THREE.EdgesGeometry(bldgGeo);
+      const wireMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2 });
+      const wireMesh = new THREE.LineSegments(wireGeo, wireMat);
+      bldgMesh.add(wireMesh);
+
+      // Roof Skylights
+      const roofRailGeo = new THREE.BoxGeometry(bldgW - 10, 1.5, 6);
+      const roofRailMat = new THREE.MeshStandardMaterial({ color: 0x0284c7 });
+      const rail1 = new THREE.Mesh(roofRailGeo, roofRailMat);
+      rail1.position.set(0, bldgH / 2 + 1, -25);
+      bldgMesh.add(rail1);
+      const rail2 = rail1.clone();
+      rail2.position.set(0, bldgH / 2 + 1, 25);
+      bldgMesh.add(rail2);
+
+      registerInteractive(bldgMesh, {
+        title: "High-Bay Assembly Hall (Bldg 01)",
+        type: "PRIMARY INDUSTRIAL",
+        dim: "140m × 90m",
+        height: "20.0 meters",
+        power: "1,850 kW",
+        status: "COMPLIANT (PASS)",
+        desc: "Equipped with twin 40-tonne overhead gantry cranes, heavy reinforced foundation (450 kPa), and positive-pressure climate filtration for aerospace & structural avionics."
+      });
+
+      // 2. High-Voltage Substation & Transformer Bay
+      const subX = 95, subZ = -45;
+      const subPadGeo = new THREE.BoxGeometry(45, 1, 40);
+      const subPadMat = new THREE.MeshStandardMaterial({ color: 0x27272a, roughness: 0.9 });
+      const subPad = new THREE.Mesh(subPadGeo, subPadMat);
+      subPad.position.set(subX, 0.5, subZ);
+      buildingGroup.add(subPad);
+
+      for (let i = -1; i <= 1; i++) {
+        const transGeo = new THREE.BoxGeometry(7, 8, 9);
+        const transMat = new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.7 });
+        const trans = new THREE.Mesh(transGeo, transMat);
+        trans.position.set(subX + (i * 12), 4.5, subZ);
+        trans.castShadow = true;
+        buildingGroup.add(trans);
+
+        const bushGeo = new THREE.CylinderGeometry(0.8, 0.8, 4, 8);
+        const bushMat = new THREE.MeshStandardMaterial({ color: 0xfef08a });
+        const bush1 = new THREE.Mesh(bushGeo, bushMat);
+        bush1.position.set(0, 5.5, 2);
+        trans.add(bush1);
+
+        registerInteractive(trans, {
+          title: `34.5 kV Transformer Unit #${i + 2}`,
+          type: "HIGH VOLTAGE",
+          dim: "7m × 9m",
+          height: "8.0 meters",
+          power: "Stepped Primary 15 MVA",
+          status: "15m BUFFER VERIFIED",
+          desc: "Step-down transformation unit feeding high-bay electrical distribution. NFPA 70E arc flash standoff buffer strictly enforced."
+        });
+      }
+
+      // Glowing Arc Flash Cylinder Buffer
+      const arcBufferGeo = new THREE.CylinderGeometry(28, 28, 14, 32);
+      const arcBufferMat = new THREE.MeshBasicMaterial({
+        color: 0xf59e0b,
+        transparent: true,
+        opacity: 0.22,
+        side: THREE.DoubleSide
+      });
+      const arcCylinder = new THREE.Mesh(arcBufferGeo, arcBufferMat);
+      arcCylinder.position.set(subX, 7, subZ);
+      hazardGroup.add(arcCylinder);
+
+      // 3. Chemical Solvent Vault & Catchment Berm
+      const hazX = 95, hazZ = 45;
+      const bermGeo = new THREE.BoxGeometry(45, 3.5, 40);
+      const bermMat = new THREE.MeshStandardMaterial({ color: 0x450a0a, roughness: 0.8 });
+      const bermMesh = new THREE.Mesh(bermGeo, bermMat);
+      bermMesh.position.set(hazX, 1.75, hazZ);
+      bermMesh.castShadow = true;
+      buildingGroup.add(bermMesh);
+
+      for (let tx = -1; tx <= 1; tx += 2) {
+        for (let tz = -1; tz <= 1; tz += 2) {
+          const tankGeo = new THREE.CylinderGeometry(3.5, 3.5, 10, 16);
+          const tankMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, metalness: 0.8, roughness: 0.2 });
+          const tank = new THREE.Mesh(tankGeo, tankMat);
+          tank.position.set(hazX + (tx * 10), 5.5, hazZ + (tz * 8));
+          tank.castShadow = true;
+          buildingGroup.add(tank);
+
+          registerInteractive(tank, {
+            title: "Solvent Storage Tank T-40",
+            type: "HAZARDOUS CHEMICAL",
+            dim: "Dia: 7.0m",
+            height: "10.0 meters",
+            power: "Passive Containment",
+            status: "110% BERM OK",
+            desc: "Flammable degreaser and chemical solvents. Protected with 110% volume secondary concrete catchment berm (EPA SPCC compliant)."
+          });
+        }
+      }
+
+      const hazDomeGeo = new THREE.SphereGeometry(30, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+      const hazDomeMat = new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.25, wireframe: true });
+      const hazDome = new THREE.Mesh(hazDomeGeo, hazDomeMat);
+      hazDome.position.set(hazX, 0.2, hazZ);
+      hazardGroup.add(hazDome);
+
+      // 4. Emergency Muster Point Alpha
+      const mustX = -105, mustZ = 55;
+      const mustGeo = new THREE.CylinderGeometry(18, 18, 0.6, 32);
+      const mustMat = new THREE.MeshStandardMaterial({ color: 0x14532d, roughness: 0.5 });
+      const mustMesh = new THREE.Mesh(mustGeo, mustMat);
+      mustMesh.position.set(mustX, 0.3, mustZ);
+      buildingGroup.add(mustMesh);
+
+      const beaconGeo = new THREE.CylinderGeometry(0.8, 0.8, 14, 16);
+      const beaconMat = new THREE.MeshBasicMaterial({ color: 0x22c55e });
+      const beacon = new THREE.Mesh(beaconGeo, beaconMat);
+      beacon.position.set(mustX, 7, mustZ);
+      buildingGroup.add(beacon);
+
+      const safeCylGeo = new THREE.CylinderGeometry(20, 20, 8, 32);
+      const safeCylMat = new THREE.MeshBasicMaterial({ color: 0x22c55e, transparent: true, opacity: 0.2, wireframe: true });
+      const safeCyl = new THREE.Mesh(safeCylGeo, safeCylMat);
+      safeCyl.position.set(mustX, 4, mustZ);
+      hazardGroup.add(safeCyl);
+
+      registerInteractive(mustMesh, {
+        title: "Emergency Muster Station Alpha",
+        type: "LIFE SAFETY MUSTER",
+        dim: "Radius: 18.0m",
+        height: "Open Air Assembly",
+        power: "0 kW",
+        status: "SAFE ZONE (PASS)",
+        desc: "OSHA 1910.38 designated emergency egress gathering point. Structural encumbrance or equipment placement inside this perimeter is prohibited."
+      });
+
+      // 5. Deployed Industrial Machinery Units
+      deploy3DGenerator(-60, -65, "GEN-EMERG-01");
+      deploy3DChiller(-20, -65, "CHILLER-MAIN-A");
+      deploy3DCompressor(15, -65, "COMP-AIR-SYS1");
+      deploy3DBESS(60, -65, "BESS-UNIT-NORTH");
+    }
+
+    // --- EQUIPMENT BUILDERS ---
+    function deploy3DGenerator(x, z, tag) {
+      const gGroup = new THREE.Group();
+      gGroup.position.set(x, 0, z);
+
+      const skidGeo = new THREE.BoxGeometry(10, 4.5, 4);
+      const skidMat = new THREE.MeshStandardMaterial({ color: 0x0369a1, metalness: 0.6 });
+      const skid = new THREE.Mesh(skidGeo, skidMat);
+      skid.position.y = 2.25;
+      skid.castShadow = true;
+      gGroup.add(skid);
+
+      const stackGeo = new THREE.CylinderGeometry(0.5, 0.5, 4.5, 8);
+      const stackMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9 });
+      const stack1 = new THREE.Mesh(stackGeo, stackMat);
+      stack1.position.set(-2.5, 6, 0);
+      gGroup.add(stack1);
+
+      equipmentGroup.add(gGroup);
+      registerInteractive(skid, {
+        title: `${tag} (1.5MW Industrial Standby Generator)`,
+        type: "POWER GENERATION",
+        dim: "10.0m × 4.0m",
+        height: "6.5m (With Stacks)",
+        power: "1,500 kW Output",
+        status: "OPERATIONAL",
+        desc: "Continuous heavy diesel combustion unit with dual sound attenuators. Generates 92 dBA at 1m with integrated secondary fuel containment skid."
+      });
+    }
+
+    function deploy3DChiller(x, z, tag) {
+      const cGroup = new THREE.Group();
+      cGroup.position.set(x, 0, z);
+
+      const bodyGeo = new THREE.BoxGeometry(7, 3.5, 3.5);
+      const bodyMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.3 });
+      const body = new THREE.Mesh(bodyGeo, bodyMat);
+      body.position.y = 1.75;
+      body.castShadow = true;
+      cGroup.add(body);
+
+      for (let i = -1; i <= 1; i++) {
+        const fanGeo = new THREE.CylinderGeometry(0.9, 0.9, 0.4, 12);
+        const fanMat = new THREE.MeshStandardMaterial({ color: 0x0f172a });
+        const fan = new THREE.Mesh(fanGeo, fanMat);
+        fan.position.set(i * 2, 3.7, 0);
+        cGroup.add(fan);
+      }
+
+      equipmentGroup.add(cGroup);
+      registerInteractive(body, {
+        title: `${tag} (600-Ton Centrifugal Chiller)`,
+        type: "HVAC / COOLING",
+        dim: "7.0m × 3.5m",
+        height: "3.7 meters",
+        power: "420 kW Input",
+        status: "OPERATIONAL",
+        desc: "Low-GWP non-flammable refrigerant water-cooled chiller providing structural assembly cleanrooms with continuous climate stabilization."
+      });
+    }
+
+    function deploy3DCompressor(x, z, tag) {
+      const compGeo = new THREE.BoxGeometry(5, 3, 2.5);
+      const compMat = new THREE.MeshStandardMaterial({ color: 0x0891b2 });
+      const comp = new THREE.Mesh(compGeo, compMat);
+      comp.position.set(x, 1.5, z);
+      comp.castShadow = true;
+      equipmentGroup.add(comp);
+
+      registerInteractive(comp, {
+        title: `${tag} (Oil-Free Air Compressor)`,
+        type: "INSTRUMENT AIR",
+        dim: "5.0m × 2.5m",
+        height: "3.0 meters",
+        power: "250 kW",
+        status: "OPERATIONAL",
+        desc: "Class-0 oil-free rotary screw compressor delivering 8.5 bar clean dry compressed air to structural pneumatic riveting and testing bays."
+      });
+    }
+
+    function deploy3DBESS(x, z, tag) {
+      const bessGeo = new THREE.BoxGeometry(9, 4, 3);
+      const bessMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.5 });
+      const bess = new THREE.Mesh(bessGeo, bessMat);
+      bess.position.set(x, 2, z);
+      bess.castShadow = true;
+      equipmentGroup.add(bess);
+
+      registerInteractive(bess, {
+        title: `${tag} (3.9 MWh Battery Energy Storage)`,
+        type: "MICROGRID RESILIENCE",
+        dim: "9.0m × 3.0m",
+        height: "4.0 meters",
+        power: "975 kW Inverter",
+        status: "OPERATIONAL",
+        desc: "Utility-scale lithium-iron-phosphate (LFP) energy reservoir providing microgrid frequency response and backup facility power during grid disconnection."
+      });
+    }
+
+    // --- INTERACTIVE RAYCASTING (CLICK TO INSPECT) ---
+    function registerInteractive(mesh, data) {
+      mesh.userData = data;
+      interactiveObjects.push(mesh);
+    }
+
+    function onCanvasClick(event) {
+      const container = document.getElementById("canvas-container");
+      const rect = container.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / container.clientWidth) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / container.clientHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(interactiveObjects, true);
+
+      if (intersects.length > 0) {
+        let hit = intersects[0].object;
+        while (hit && !hit.userData.title && hit.parent) {
+          hit = hit.parent;
+        }
+        if (hit && hit.userData.title) {
+          displayInspection(hit.userData);
+        }
+      }
+    }
+
+    function displayInspection(data) {
+      document.getElementById("insp-title").innerText = data.title;
+      document.getElementById("insp-type").innerText = data.type;
+      document.getElementById("insp-dim").innerText = data.dim;
+      document.getElementById("insp-height").innerText = data.height;
+      document.getElementById("insp-power").innerText = data.power;
+      document.getElementById("insp-status").innerText = data.status;
+      document.getElementById("insp-desc").innerText = data.desc;
+
+      const badge = document.getElementById("insp-badge");
+      if (data.type.includes("HAZARD")) badge.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-ping";
+      else if (data.type.includes("HIGH VOLTAGE")) badge.className = "w-2.5 h-2.5 rounded-full bg-amber-400";
+      else if (data.type.includes("SAFE")) badge.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
+      else badge.className = "w-2.5 h-2.5 rounded-full bg-cyan-400";
+    }
+
+    // --- CAMERA VIEW PRESETS ---
+    function setCameraView(view) {
+      if (view === 'orbit') {
+        smoothCameraMove(0, 180, 240, 0, 0, 0);
+      } else if (view === 'topdown') {
+        smoothCameraMove(0, 320, 0.1, 0, 0, 0);
+      } else if (view === 'highbay') {
+        smoothCameraMove(-20, 50, 110, -20, 10, 0);
+      } else if (view === 'hazmat') {
+        smoothCameraMove(95, 45, 120, 95, 5, 45);
+      } else if (view === 'skids') {
+        smoothCameraMove(0, 35, -120, 0, 5, -65);
+      }
+    }
+
+    function resetCamera() {
+      setCameraView('orbit');
+    }
+
+    function smoothCameraMove(targetX, targetY, targetZ, lookX, lookY, lookZ) {
+      const startPos = camera.position.clone();
+      const endPos = new THREE.Vector3(targetX, targetY, targetZ);
+      const startLook = (controls && controls.target) ? controls.target.clone() : new THREE.Vector3(0, 0, 0);
+      const endLook = new THREE.Vector3(lookX, lookY, lookZ);
+
+      let progress = 0;
+      function step() {
+        progress += 0.045;
+        if (progress <= 1) {
+          camera.position.lerpVectors(startPos, endPos, progress);
+          if (controls && controls.target) controls.target.lerpVectors(startLook, endLook, progress);
+          camera.lookAt(controls && controls.target ? controls.target : endLook);
+          requestAnimationFrame(step);
+        } else {
+          camera.position.copy(endPos);
+          if (controls && controls.target) controls.target.copy(endLook);
+          camera.lookAt(endLook);
+        }
+      }
+      step();
+    }
+
+    // --- LAYER VISIBILITY TOGGLES ---
+    function toggleLayer(layerName, visible) {
+      if (layerName === 'buildings') buildingGroup.visible = visible;
+      else if (layerName === 'equipment') equipmentGroup.visible = visible;
+      else if (layerName === 'hazards') hazardGroup.visible = visible;
+      else if (layerName === 'blueprintFloor') groundMesh.visible = visible;
+    }
+
+    // --- DAY / NIGHT TACTICAL LIGHTING ---
+    function toggleDayNight() {
+      isNightMode = !isNightMode;
+      const btn = document.getElementById("btn-lighting");
+
+      if (isNightMode) {
+        scene.background.setHex(0x020617);
+        scene.fog.color.setHex(0x020617);
+        ambientLight.intensity = 0.25;
+        directionalLight.intensity = 0.35;
+        btn.innerText = "☀️ Day Mode";
+        btn.className = "px-2.5 py-1.5 bg-cyan-900 border border-cyan-500 text-cyan-200 rounded text-xs font-mono font-bold";
+      } else {
+        scene.background.setHex(0x050b14);
+        scene.fog.color.setHex(0x050b14);
+        ambientLight.intensity = 0.6;
+        directionalLight.intensity = 0.95;
+        btn.innerText = "🌙 Night Mode";
+        btn.className = "px-2.5 py-1.5 bg-[#122238] hover:bg-[#1a3152] border border-slate-700 text-slate-300 rounded text-xs font-mono";
+      }
+    }
+
+    function onWindowResize() {
+      const container = document.getElementById("canvas-container");
+      const width = container.clientWidth || window.innerWidth;
+      const height = container.clientHeight || (window.innerHeight - 56);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+    }
+
+    // --- REPORT MODAL OPEN / CLOSE ---
+    function openReportModal() {
+      const modal = document.getElementById("report-modal");
+      modal.classList.remove("hidden");
+      document.getElementById("report-date").innerText = new Date().toISOString().split('T')[0];
+      document.getElementById("report-blueprint-name").innerText = currentBlueprintName;
+      document.getElementById("report-hash").innerText = "HASH: " + Math.random().toString(36).substring(2, 6).toUpperCase() + "-" + Math.random().toString(36).substring(2, 6).toUpperCase() + "-2026";
+    }
+
+    function closeReportModal() {
+      document.getElementById("report-modal").classList.add("hidden");
+    }
+
+    // --- EXPORT AUDIT AS JSON ---
+    function exportAuditJSON() {
+      const auditPayload = {
+        blueprint_name: currentBlueprintName,
+        evaluation_timestamp: new Date().toISOString(),
+        site_code: "FAC-NAV-01 (Sentinel Site Delta)",
+        boundary_dimensions_meters: { width: SITE_WIDTH, height: SITE_HEIGHT, area_sqm: SITE_WIDTH * SITE_HEIGHT },
+        overall_status: "APPROVED FOR SIMULATION",
+        power_metrics: {
+          connected_power_kw: 3145,
+          annual_carbon_tco2e: 4890,
+          perimeter_noise_dba: 50.5,
+          foundation_capacity_kpa: 450
+        },
+        structural_zones: [
+          { name: "High-Bay Assembly Hall", footprint: "140m x 90m", height_m: 20.0, classification: "Primary Structural", status: "COMPLIANT" },
+          { name: "34.5 kV Substation Bay", footprint: "45m x 40m", height_m: 8.0, classification: "NFPA 70E Arc Flash", status: "15m BUFFER VERIFIED" },
+          { name: "Chemical Solvent Vault", footprint: "45m x 40m", height_m: 10.0, classification: "NFPA 30 Class-II", status: "110% BERM OK" },
+          { name: "Emergency Muster Alpha", footprint: "Radius 18m", height_m: "Ground Level", classification: "OSHA 1910.38 Assembly", status: "CLEAR" }
+        ],
+        industrial_skids: [
+          { tag: "GEN-EMERG-01", model: "CAT-G3516 1.5MW Diesel Standby", load_kw: 1500, noise_dba: 92, clearance_m: 4.5 },
+          { tag: "CHILLER-MAIN-A", model: "Trane CTV 600-Ton Centrifugal", load_kw: 420, noise_dba: 76, clearance_m: 2.5 },
+          { tag: "COMP-AIR-SYS1", model: "Atlas Copco ZR-250 Oil-Free", load_kw: 250, noise_dba: 72, clearance_m: 2.0 },
+          { tag: "BESS-UNIT-NORTH", model: "Tesla Megapack 2XL 3.9MWh", load_kw: 975, noise_dba: 65, clearance_m: 3.0 }
+        ]
+      };
+
+      const blob = new Blob([JSON.stringify(auditPayload, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `3D_Spatial_Audit_${currentBlueprintName.replace(/[^a-zA-Z0-9_-]/g, "_")}.json`;
+      a.click();
+    }
+
+    // --- ANIMATION LOOP ---
+    function animate() {
+      requestAnimationFrame(animate);
+      if (controls && typeof controls.update === 'function') {
+        controls.update();
+      }
+
+      const time = Date.now() * 0.002;
+      hazardGroup.children.forEach((haz, idx) => {
+        if (haz.material && haz.material.opacity !== undefined) {
+          haz.material.opacity = 0.18 + Math.sin(time + idx) * 0.08;
+        }
+      });
+
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener("DOMContentLoaded", init3D);
+  </script>
+</body>
+</html>

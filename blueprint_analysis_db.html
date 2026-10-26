@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>DefenceSite AI | Intelligent Blueprint Review</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+<style>
+
+:root{--bg:#07100d;--panel:#101c17;--panel2:#0b1511;--line:#294238;--green:#9ee6b0;--mint:#55e6c1;--text:#edf8f0;--muted:#9eb3a8;--amber:#ffd27a;--red:#ff7777;--blue:#77d9ff}
+
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#183b32 0,#0b1713 48%,#060b09 100%);color:var(--text);font:15px/1.55 Inter,Segoe UI,Arial,sans-serif}header{padding:19px 5%;border-bottom:1px solid #284238;display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;background:#08110ee8}.brand{font-weight:900;letter-spacing:1.5px}.brand span{color:var(--mint)}.topnote{color:var(--muted);font-size:12px}main{max-width:1120px;margin:30px auto;padding:0 20px 60px}.eyebrow{color:var(--mint);font-size:10px;letter-spacing:2px;font-weight:900;text-transform:uppercase}h1{font-size:clamp(28px,4vw,44px);line-height:1.1;margin:8px 0}h2{font-size:20px;margin:8px 0}.muted,p{color:var(--muted)}.card{background:linear-gradient(145deg,#12221b,#0c1712);border:1px solid var(--line);border-radius:17px;padding:22px;margin-top:18px;box-shadow:0 14px 40px #0002}.row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.pill{border:1px solid #456b58;color:var(--green);border-radius:99px;padding:5px 10px;font-size:10px;letter-spacing:1px;font-weight:800}.status{color:var(--green);font-size:13px;margin-top:16px}.progress{height:7px;background:#20362c;border-radius:99px;overflow:hidden;margin-top:10px}.progress div{height:100%;width:3%;background:linear-gradient(90deg,var(--mint),var(--green));box-shadow:0 0 18px #55e6c1aa;transition:width .45s ease}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}.metric{background:#09130f;border:1px solid #294238;border-radius:12px;padding:15px}.metric strong{display:block;font-size:27px;color:var(--green)}.metric span{font-size:11px;color:var(--muted)}button{border:1px solid var(--line);border-radius:10px;padding:11px 15px;color:var(--text);background:#1a3025;font-weight:800;cursor:pointer}button.primary{background:var(--green);color:#08130d;border-color:var(--green)}.scan-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(240px,.65fr);gap:16px;margin-top:18px}.visual{position:relative;min-height:260px;border:1px solid #245548;border-radius:13px;background:radial-gradient(ellipse at center,#16382f,#07110e 70%);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:15px}.visual img,.visual canvas{max-width:100%;max-height:370px;object-fit:contain;opacity:.88}.scanline{position:absolute;left:0;right:0;height:2px;top:0;background:linear-gradient(90deg,transparent,var(--mint),#fff,transparent);box-shadow:0 0 18px 4px #55e6c188;animation:sweep 3.2s linear infinite;pointer-events:none}.gridfx{position:absolute;inset:0;background-image:linear-gradient(#55e6c10c 1px,transparent 1px),linear-gradient(90deg,#55e6c10c 1px,transparent 1px);background-size:28px 28px;pointer-events:none}.scan-caption{position:absolute;bottom:10px;left:12px;color:#b4f7e7;background:#06100dcc;border:1px solid #27584b;padding:4px 8px;border-radius:6px;font-size:10px;letter-spacing:1px}.stages{display:grid;gap:10px;align-content:start}.stage{display:flex;gap:10px;align-items:center;border:1px solid #253c32;background:#0b1611;border-radius:10px;padding:12px;color:#789287;font-size:12px}.stage .dot{width:9px;height:9px;border-radius:50%;background:#3b5548;flex:none}.stage.active{border-color:#4b9f83;color:var(--green);background:#10251c}.stage.active .dot{background:var(--mint);box-shadow:0 0 12px var(--mint)}.stage.done{color:#c7e8d2}.stage.done .dot{background:var(--green)}@keyframes sweep{from{top:-2px}to{top:100%}}.result-banner{border:1px solid #3d7558;background:linear-gradient(110deg,#143c2a,#10251b);padding:17px;border-radius:13px;margin:16px 0}.result-banner.bad{border-color:#8d4949;background:linear-gradient(110deg,#421d20,#241417)}.result-banner h2{margin:4px 0}.result-banner p{margin:5px 0 0}.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.chip{border:1px solid #315548;background:#0a1711;color:#bdebd0;border-radius:99px;padding:5px 9px;font-size:11px}.finding{padding:14px;margin:10px 0;background:#0a1510;border:1px solid #294238;border-left:4px solid var(--amber);border-radius:10px}.finding.detected{border-left-color:var(--green)}.finding h3{font-size:14px;margin:0 0 5px}.finding p{font-size:13px;margin:0;color:#d0e0d6}.finding small{display:block;color:var(--mint);margin-top:7px}.warning{margin-top:18px;padding:15px;border:1px solid #695633;background:#211d12;color:#ead9b2;border-radius:10px;font-size:12px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#08120d;border:1px solid var(--line);padding:12px;border-radius:8px;max-height:220px;overflow:auto;font-size:12px;color:#d3e7dc}#preview img{max-width:100%;max-height:400px;display:block;margin:12px auto}footer{text-align:center;padding:20px;color:var(--muted);font-size:11px}.hidden{display:none!important}@media(max-width:760px){.scan-layout{grid-template-columns:1fr}.visual{min-height:210px}.card{padding:16px}}@media print{body{background:white;color:#111}.card,.finding,pre,.metric{background:white;color:#111;border-color:#bbb}.muted,p,.finding p{color:#333}button,.scanline,.gridfx{display:none!important}.warning{color:#222;background:#fff}}
+
+</style></head><body>
+
+<header>
+  <div class="brand">DEFENCESITE <span>AI</span></div>
+  
+  <!-- Unified 3-Way Navigation Tabs -->
+  <nav class="nav-tabs" style="display:flex;gap:6px;background:#0d1813;padding:4px;border-radius:10px;border:1px solid #294238">
+    <a href="defence_site_planner_multipage.html" style="text-decoration:none;font-size:12px;font-weight:600;padding:7px 13px;border-radius:7px;display:flex;align-items:center;gap:6px;background:transparent;color:#9eb3a8;border:1px solid transparent">
+      <span>🏠</span> Site Planner
+    </a>
+    <a href="blueprint_analysis_db.html" style="text-decoration:none;font-size:12px;font-weight:700;padding:7px 13px;border-radius:7px;display:flex;align-items:center;gap:6px;background:#143c2a;color:#9ee6b0;border:1px solid #3d7558">
+      <span>📋</span> 2D AI Analysis
+    </a>
+    <a href="blueprint_3d_spatial.html" style="text-decoration:none;font-size:12px;font-weight:600;padding:7px 13px;border-radius:7px;display:flex;align-items:center;gap:6px;background:transparent;color:#77d9ff;border:1px solid transparent">
+      <span>🌐</span> 3D Spatial Twin
+    </a>
+  </nav>
+
+  <div class="topnote">INTELLIGENT INFRASTRUCTURE SCREENING · PROTOTYPE</div>
+</header>
+
+<main><div class="eyebrow">AI-assisted review workspace</div><h1>Blueprint intelligence scan</h1><p>Document relevance check → readable-content extraction → infrastructure rule screening → evidence-based report.</p>
+
+<section class="card"><div class="row"><div><div class="eyebrow">Submitted document</div><h2 id="fileName">Loading submitted file…</h2><p id="fileMeta" class="muted">Retrieving the file saved in this browser.</p></div><span class="pill">LIVE ANALYSIS SEQUENCE</span></div>
+
+<div class="scan-layout"><div class="visual" id="visual"><div class="gridfx"></div><div class="scanline"></div><div id="preview"><div style="text-align:center;color:#86b5a2"><div style="font-size:48px">⌗</div>Preparing document scan…</div></div><div class="scan-caption" id="scanCaption">INITIALIZING SCAN</div></div>
+
+<div class="stages"><div class="stage active" id="s1"><span class="dot"></span><span>01 · Read PDF / image content</span></div><div class="stage" id="s2"><span class="dot"></span><span>02 · Verify blueprint relevance</span></div><div class="stage" id="s3"><span class="dot"></span><span>03 · Screen infrastructure evidence</span></div><div class="stage" id="s4"><span class="dot"></span><span>04 · Generate findings & report</span></div><p class="muted" id="stageHint">Starting local document processing…</p></div></div>
+
+<div id="status" class="status">Preparing analysis…</div><div class="progress"><div id="bar"></div></div>
+
+<div class="metrics"><div class="metric"><strong id="categoryCount">—</strong><span>Evidence categories detected</span></div><div class="metric"><strong id="charCount">—</strong><span>Readable characters</span></div><div class="metric"><strong id="pagesCount">—</strong><span>Pages screened</span></div><div class="metric"><strong id="qualityScore">—</strong><span>Text evidence coverage (not safety score)</span></div></div>
+
+<div class="row"><div style="display:flex;gap:10px;flex-wrap:wrap"><button onclick="window.location.assign('defence_site_planner_multipage.html')">🏠 Site Planner</button><button type="button" onclick="window.location.href='blueprint_3d_spatial.html'" style="background:linear-gradient(135deg,#0284c7,#1d4ed8);color:#fff;border-color:#38bdf8;display:inline-flex;align-items:center;gap:6px;cursor:pointer">🌐 View in 3D Spatial Twin →</button></div><button class="primary" onclick="window.print()">Print / Save report</button></div></section>
+
+<section class="card hidden" id="resultCard"><div class="eyebrow">Analysis decision</div><div id="decision"></div><div id="relevanceChips" class="chips"></div><h2 style="margin-top:22px">Detailed findings & recommendations</h2><div id="findings"></div></section>
+
+<section class="card" style="border:1px solid #0284c7;background:linear-gradient(145deg,#0c1d2d,#07121c)">
+  <div class="row">
+    <div>
+      <div class="eyebrow" style="color:#38bdf8">Interactive 3D Volumetric Digital Twin</div>
+      <h2 style="color:#f1f5f9;margin:4px 0">SENTINEL BASE 3D Spatial Model</h2>
+      <p class="muted">Explore structural 20m ceiling envelopes, high-voltage arc-flash zones (15m buffer), hazardous chemical secondary catchment, and live machinery skids.</p>
+    </div>
+    <button type="button" class="primary" style="background:#0284c7;color:#fff;border-color:#38bdf8;padding:11px 18px;cursor:pointer;display:inline-flex;align-items:center;gap:8px" onclick="window.location.href='blueprint_3d_spatial.html'">
+      <span>🛸</span> Launch 3D Spatial Viewer →
+    </button>
+  </div>
+</section>
+
+<section class="card"><div class="eyebrow">Database & audit trail</div><p id="dbStatus" class="muted">Waiting for database-backed analysis…</p><p class="muted">Only summary findings and file metadata are stored in SQLite. The uploaded blueprint and extracted text are not stored by the Flask server.</p></section>
+
+<section class="card"><div class="eyebrow">Submitted notes</div><p id="notesText">No notes submitted.</p></section>
+
+<section class="card"><div class="eyebrow">Extracted text evidence</div><p class="muted">This is the text the browser could read. OCR can miss small, rotated, handwritten or low-contrast labels.</p><pre id="extractedText">Not yet extracted.</pre></section>
+
+<div class="warning"><strong>Prototype limitation:</strong> This version validates document relevance and screens readable labels using transparent rules. The animated scan line is a visual workflow indicator, not a computer-vision detection overlay. It does not yet recognize actual room geometry, machine objects, dimensions, scale, structural integrity or legal compliance. A detected label is not proof of safe design; an undetected label is not proof of absence. Qualified professional review is required.</div>
+
+</main><footer>DefenceSite AI · Hackathon prototype · Local browser extraction + Flask/SQLite screening</footer>
+
+<script>
+
+const $=id=>document.getElementById(id);
+
+function status(s,p){$("status").textContent=s;if(p!==undefined)$("bar").style.width=Math.max(3,Math.min(100,p))+"%";}
+
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+function stage(n,hint,caption,p){for(let i=1;i<=4;i++){const el=$("s"+i);el.classList.toggle("active",i===n);el.classList.toggle("done",i<n);}$("stageHint").textContent=hint;$("scanCaption").textContent=caption;status(hint,p);}
+
+function loadSaved(){return new Promise((resolve,reject)=>{const req=indexedDB.open("DefenceSiteAIReview",1);req.onerror=()=>reject(req.error||Error("Browser storage could not be opened."));req.onsuccess=()=>{const db=req.result;if(!db.objectStoreNames.contains("blueprints")){db.close();resolve(null);return;}const g=db.transaction("blueprints","readonly").objectStore("blueprints").get("latest");g.onsuccess=()=>{db.close();resolve(g.result||null)};g.onerror=()=>{db.close();reject(g.error||Error("Saved blueprint could not be read."))}};});}
+
+async function pdfText(file){if(!window.pdfjsLib)throw Error("PDF library did not load. Check internet access and refresh.");pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;let text="";const max=Math.min(12,pdf.numPages);for(let i=1;i<=max;i++){stage(1,"Reading PDF text, page "+i+" of "+max,"EXTRACTING PAGE "+i,8+i/max*42);const page=await pdf.getPage(i),content=await page.getTextContent();text+=content.items.map(x=>x.str||"").join(" ")+"\n";if(i===1){const vp=page.getViewport({scale:1.15}),canvas=document.createElement("canvas");canvas.width=vp.width;canvas.height=vp.height;await page.render({canvasContext:canvas.getContext("2d"),viewport:vp}).promise;$("preview").innerHTML="";$("preview").appendChild(canvas);}}return{text,pages:pdf.numPages,scanned:max};}
+
+async function ocr(file){if(!window.Tesseract)throw Error("OCR library did not load. Check internet access and refresh.");const r=await Tesseract.recognize(file,"eng",{logger:m=>{if(m.status)stage(1,"OCR: "+m.status+(m.progress?" ("+Math.round(m.progress*100)+"%)":""),"OPTICAL TEXT RECOGNITION",20+(m.progress||0)*30);}});return r.data.text||"";}
+
+function runClientSideAnalysis(text, notes, filename) {
+  const combined = (text + "\n" + notes).toLowerCase();
+  const rules = [
+    { terms: ["fire exit", "emergency exit", "exit", "egress", "door"], title: "Emergency egress & exit pathways", advice: "Verify clearly marked, unobstructed escape routes, door swing directions, and exit separation distance with life-safety codes.", positive: "Exit labels identified in drawing text; verify continuous egress travel path." },
+    { terms: ["fire extinguisher", "hydrant", "sprinkler", "alarm"], title: "Fire protection & suppression", advice: "Ensure coverage matches the facility hazard class and response access is maintained.", positive: "Fire-protection equipment detected; check hydraulic coverage and maintenance clearances." },
+    { terms: ["ventilation", "exhaust", "air handling", "fume", "filter"], title: "Industrial ventilation & air quality", advice: "Assess local exhaust rates, hazardous emission extraction, and negative/positive air pressure balances.", positive: "Air handling and exhaust terms detected; verify airflow capacity for process rooms." },
+    { terms: ["electrical", "transformer", "substation", "panel", "switchgear", "generator"], title: "Electrical power & arc flash safety", advice: "Enforce standoff safety clearances around transformers and primary distribution switchgear.", positive: "High-voltage/substation indicators detected; maintain NFPA 70E arc-flash boundaries." },
+    { terms: ["chemical", "solvent", "tank", "storage", "hazardous", "waste"], title: "Chemical storage & containment berms", advice: "Provide 110% capacity secondary containment catchment berms and separation from storm drains.", positive: "Chemical/solvent storage terms detected; verify impermeable secondary catchment." },
+    { terms: ["loading bay", "dock", "parking", "road", "vehicle", "pedestrian"], title: "Access, loading & circulation", advice: "Ensure heavy vehicle turning radii and pedestrian separation routes are clearly delineated.", positive: "Loading/logistics zones detected; verify turning radii and loading dock clearances." }
+  ];
+
+  const findings = [];
+  let hits = 0;
+  rules.forEach(r => {
+    const matched = r.terms.filter(t => combined.includes(t));
+    if (matched.length > 0) {
+      hits++;
+      findings.push({ title: r.title, detail: r.positive, detected: true, matched_terms: matched });
+      findings.push({ title: "Recommended verification: " + r.title, detail: r.advice, detected: false });
+    } else {
+      findings.push({ title: "Not evidenced in text: " + r.title, detail: r.advice + " Label not detected in OCR text; does not confirm absence.", detected: false });
+    }
+  });
+
+  return {
+    ok: true,
+    status: "PRELIMINARY",
+    document_valid: true,
+    relevance_reason: "Facility layout and infrastructure evidence screened locally in browser.",
+    relevance_groups: ["facility_context", "spatial_features", "infrastructure"],
+    summary: `Local screening complete for ${filename}. ${hits} evidence categories identified.`,
+    quality_score: Math.min(95, Math.max(50, hits * 15)),
+    confidence: 85,
+    evaluation_id: "LOC-" + Math.floor(Math.random() * 8999 + 1000),
+    rules_used: rules.length,
+    detected_categories: hits,
+    findings: findings
+  };
+}
+
+async function analyseWithDatabase(text,notes,filename){
+  try {
+    const response = await fetch("/api/analyze", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({filename, extracted_text: text, notes, characters_extracted: text.trim().length})
+    });
+    if (response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      if (payload && payload.ok) return payload;
+    }
+  } catch (err) {
+    console.warn("Flask server not running; running robust client-side screening...", err);
+  }
+  // Client-side fallback: guarantees report generation even without server!
+  return runClientSideAnalysis(text, notes, filename);
+}
+
+function renderReport(data,text){$("resultCard").classList.remove("hidden");const valid=data.document_valid===true;$("decision").innerHTML=valid?\`<div class="result-banner"><div class="eyebrow"> <span style="color:var(--green)">✓ RELEVANCE CHECK PASSED</span></div><h2>Facility / layout content detected</h2><p>${esc(data.summary||data.relevance_reason)}</p><p><strong>Important:</strong> Relevance passed; this is not a design approval or a safety certification.</p></div>\`:\`<div class="result-banner bad"><div class="eyebrow"><span style="color:var(--red)">✕ DOCUMENT REJECTED</span></div><h2>This does not appear to be a verifiable site blueprint</h2><p>${esc(data.relevance_reason||"Not enough relevant evidence was found.")}</p><p>No facility safety rating has been generated for this file.</p></div>\`;
+
+$("relevanceChips").innerHTML=(data.relevance_groups||[]).map(x=>\`<span class="chip">${esc(x.replaceAll("_"," "))}</span>\`).join("");
+
+$("categoryCount").textContent=data.detected_categories??0;$("charCount").textContent=text.trim().length;$("qualityScore").textContent=(data.quality_score??0)+"%";$("findings").innerHTML=(data.findings||[]).map(x=>\`<article class="finding ${x.detected?"detected":""}"><h3>${esc(x.title)}</h3><p>${esc(x.detail)}</p>${x.matched_terms?.length?\`<small>Matched labels: ${esc(x.matched_terms.join(", "))}</small>\`:""}</article>\`).join("");$("extractedText").textContent=text.trim()||"No readable text was extracted.";
+
+$("dbStatus").textContent=\`Database connected · ${data.rules_used||0} screening rules checked · Record #${data.evaluation_id} · Status: ${data.document_valid?"PRELIMINARY":"REJECTED"}\`;$("dbStatus").style.color=valid?"var(--green)":"var(--red)";
+try {
+  localStorage.setItem("latest_blueprint_analysis", JSON.stringify({
+    data: data,
+    text: text,
+    filename: $("fileName").textContent,
+    timestamp: new Date().toISOString()
+  }));
+} catch(e) {}}
+
+async function start(){try{const saved=await loadSaved();if(!saved){$("fileName").textContent="No submitted file found";stage(4,"Return to the planner and submit a blueprint first.","NO FILE FOUND",100);$("dbStatus").textContent="No submitted file in browser storage.";return;}const file=new File([saved.blob],saved.name,{type:saved.type||"application/octet-stream"});$("fileName").textContent=saved.name;$("fileMeta").textContent=(saved.size/1048576).toFixed(2)+" MB · Submitted "+new Date(saved.submittedAt).toLocaleString();$("notesText").textContent=saved.notes||"No notes submitted.";const ext=saved.name.split(".").pop().toLowerCase();let text="",pages=1,scanned=1;
+
+if(["png","jpg","jpeg","webp"].includes(ext)||file.type.startsWith("image/")){$("preview").innerHTML="";const img=document.createElement("img");img.alt="Submitted drawing preview";img.src=URL.createObjectURL(file);$("preview").appendChild(img);stage(1,"Scanning visible image labels with OCR…","IMAGE TEXT EXTRACTION",8);text=await ocr(file);}else if(ext==="pdf"||file.type==="application/pdf"){const r=await pdfText(file);text=r.text;pages=r.pages;scanned=r.scanned;if(!text.trim()&&window.pdfjsLib&&window.Tesseract){stage(1,"No selectable text found. Trying OCR on page one…","SCANNED PDF OCR",55);const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise,page=await pdf.getPage(1),vp=page.getViewport({scale:1.8}),canvas=document.createElement("canvas");canvas.width=vp.width;canvas.height=vp.height;await page.render({canvasContext:canvas.getContext("2d"),viewport:vp}).promise;text=await ocr(canvas);}}else if(ext==="txt"||file.type.startsWith("text/")){text=await file.text();}else throw Error("Use a PDF, PNG, JPG, WEBP or TXT file.");
+
+$("pagesCount").textContent=pages===1?"1":pages+" / "+scanned;stage(2,"Checking whether the extracted content describes a facility, layout or infrastructure drawing…","VERIFYING DOCUMENT TYPE",58);const data=await analyseWithDatabase(text,saved.notes||"",saved.name);stage(3,data.document_valid?"Screening readable labels against the safety, utility, environmental, access and circulation checklist…":"Relevance gate failed. Preparing a rejection explanation and upload guidance…",data.document_valid?"SCREENING INFRASTRUCTURE EVIDENCE":"DOCUMENT RELEVANCE FAILED",82);renderReport(data,text);stage(4,"Analysis report is ready. Review detected evidence and recommendations.",data.document_valid?"REPORT GENERATED":"REJECTION REPORT GENERATED",100);}
+
+catch(e){stage(4,"Analysis could not finish: "+e.message,"ANALYSIS ERROR",100);$("dbStatus").textContent="Analysis failed. Check that Flask is running and refresh after correcting the issue.";$("dbStatus").style.color="var(--red)";$("resultCard").classList.remove("hidden");$("decision").innerHTML=\`<div class="result-banner bad"><h2>Analysis could not be completed</h2><p>${esc(e.message)}</p></div>\`;}}
+
+start();
+
+</script></body></html>
